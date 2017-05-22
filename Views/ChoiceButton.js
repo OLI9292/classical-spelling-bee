@@ -6,11 +6,11 @@ import {
   View
 } from 'react-native';
 
-export default class OptionButton extends React.Component {
+export default class ChoiceButton extends React.Component {
 
   render() {
     return (
-      <Text style={styles.button}>{this.props.option}</Text>
+      <Text style={styles.button}>{this.props.word}</Text>
     );
   }
 }

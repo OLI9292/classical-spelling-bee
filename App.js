@@ -7,8 +7,8 @@ import {
 } from 'react-native';
 
 import FirebaseManager from './Networking/FirebaseManager';
+import ChoiceButton from './Views/ChoiceButton';
 import WordComponent from './Views/WordComponent';
-import OptionButton from './Views/OptionButton';
 
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
@@ -18,18 +18,18 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      options: []
+      choices: []
     };
   }
 
-  listenForOptions() {
-    FirebaseManager.options.on('value', (snap) => {
-      var options = [];
+  listenForChoices() {
+    FirebaseManager.choices.on('value', (snap) => {
+      var choices = [];
       snap.forEach((child) => {
-      options.push(child.key);
+      choices.push(child.key);
     });
     this.setState({
-      options: options
+      choices: choices
     });
   });
 }
@@ -47,12 +47,12 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this.listenForWords();
-    this.listenForOptions();
+    this.listenForChoices();
   }
 
   render() {
-    var optionButtons = this.state.options.map((option) => {
-      return ( <OptionButton key={option} option={option}/> );
+    var choiceButtons = this.state.choices.map((word) => {
+      return ( <ChoiceButton key={word} word={word}/> );
    });
 
     return (
@@ -61,8 +61,8 @@ export default class App extends React.Component {
           <Text style={styles.prompt}>Spell the word that means {this.state.definition}</Text>
           <WordComponent component={this.state.components} />
         </View>
-        <View style={styles.buttonContainer}>
-          {optionButtons}
+        <View style={styles.choiceButtonsContainer}>
+          {choiceButtons}
         </View>
       </View>
     );
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: height * 0.5
   },
-  buttonContainer: {
+  choiceButtonsContainer: {
     alignItems: 'center',
     flex: 1,
   },
