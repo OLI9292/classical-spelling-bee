@@ -16,5 +16,5 @@ export default class WordComponent extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  
+
 });
