@@ -1,5 +1,5 @@
 import React from 'react';
-import { 
+import {
   Dimensions,
   StyleSheet,
   Text,
@@ -7,17 +7,32 @@ import {
 } from 'react-native';
 
 import FirebaseManager from './Networking/FirebaseManager';
+import ChoiceButton from './Views/ChoiceButton';
 import WordComponent from './Views/WordComponent';
 
-const height = Dimensions.get('window').height; 
-const width = Dimensions.get('window').width; 
+const height = Dimensions.get('window').height;
+const width = Dimensions.get('window').width;
 
 export default class App extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      choices: []
+    };
   }
+
+  listenForChoices() {
+    FirebaseManager.choices.on('value', (snap) => {
+      var choices = [];
+      snap.forEach((child) => {
+      choices.push(child.key);
+    });
+    this.setState({
+      choices: choices
+    });
+  });
+}
 
   listenForWords() {
     FirebaseManager.words.on('value', (snap) => {
@@ -32,22 +47,36 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this.listenForWords();
+    this.listenForChoices();
   }
 
   render() {
+    var choiceButtons = this.state.choices.map((word) => {
+      return ( <ChoiceButton key={word} word={word}/> );
+   });
+
     return (
-      <View style={styles.promptContainer}>
-        <Text style={styles.prompt}>Spell the word that means {this.state.definition}</Text>
-        <WordComponent component={this.state.components} />
+      <View style={styles.container}>
+        <View style={styles.promptContainer}>
+          <Text style={styles.prompt}>Spell the word that means {this.state.definition}</Text>
+          <WordComponent component={this.state.components} />
+        </View>
+        <View style={styles.choiceButtonsContainer}>
+          {choiceButtons}
+        </View>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#fff',
+    flex: 1,
+    margin: width * 0.05
+  },
   promptContainer: {
     alignItems: 'center',
-    backgroundColor: '#fff',
     flex: 1,
     marginTop: height * 0.1
   },
@@ -60,5 +89,9 @@ const styles = StyleSheet.create({
   answerComponents: {
     alignItems: 'center',
     marginTop: height * 0.5
-  }
+  },
+  choiceButtonsContainer: {
+    alignItems: 'center',
+    flex: 1,
+  },
 });

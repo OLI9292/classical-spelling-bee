@@ -10,7 +10,8 @@ const firebaseConfig = {
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 const FirebaseManager = {
-  words: firebaseApp.database().ref().child('mobile').child('words')
+  words: firebaseApp.database().ref().child('mobile').child('words'),
+  choices: firebaseApp.database().ref().child('mobile').child('components')
 }
 
 export default FirebaseManager;
