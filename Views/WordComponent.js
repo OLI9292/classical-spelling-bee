@@ -10,7 +10,7 @@ export default class WordComponent extends React.Component {
 
   render() {
     return (
-      <Text>{this.props.component}</Text>
+      <Text>{this.props.key}</Text>
     );
   }
 }
