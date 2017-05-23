@@ -1,24 +1,11 @@
 import React from 'react';
-import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
 
-import GameComponent from './Components/GameComponent';
-
-const height = Dimensions.get('window').height;
-const width = Dimensions.get('window').width;
+import Game from './Components/Game';
 
 export default class App extends React.Component {
-
   render() {
     return (
-        <GameComponent />
+        <Game />
     );
   }
 }
-const styles = StyleSheet.create({
-
-});
