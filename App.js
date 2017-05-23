@@ -13,10 +13,6 @@ const width = Dimensions.get('window').width;
 
 export default class App extends React.Component {
 
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
         <GameComponent />
