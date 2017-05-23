@@ -23,5 +23,7 @@
     "firebase": "^4.0.0",
     "react": "16.0.0-alpha.6",
     "react-native": "^0.43.4",
+    "styled-components": "^1.4.6",
+    "underscore": "^1.8.3"
   }
 }
