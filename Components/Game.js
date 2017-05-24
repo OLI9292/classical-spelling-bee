@@ -43,9 +43,9 @@ export default class Game extends React.Component {
   answered(root) {
     this.setState({
       answerParts: _.map(this.state.answerParts, (part) => {
-        if (part.valueSolved === root) { part.valueUnsolved = part.valueSolved; }
+        if (part.valueSolved === root) { part.valueUnsolved = part.valueSolved }
         return part;
-      });
+      })
     });
   }
 
