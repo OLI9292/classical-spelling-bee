@@ -65,7 +65,7 @@ export default class Game extends React.Component {
 
     return (
       <Container>
-        <ProgressBar />
+        <ProgressBar progress={this.state.progress} />
         <PromptContainer>
           <Prompt>Spell the word that means {this.state.definition}</Prompt>
           <AnswerPartsContainer>
