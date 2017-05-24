@@ -29,7 +29,6 @@ const fetchRoots = async function () {
 
 const fetchWords = async function () {
   FirebaseManager.words.on('value', async (snapshot) => {
-    console.log('hi')
     const words = mapObject(snapshot.val(), (v, k) => WordParsingService(v));
     save('words', words);
   });
