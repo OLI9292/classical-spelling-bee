@@ -19,15 +19,15 @@ export default class ChoiceButton extends React.Component {
 }
 
 const Choice = styled.Text`
-  backgroundColor: blue;
   borderRadius: 10;
   borderWidth: 2;
-  color: white;
+  borderColor: grey;
+  color: grey;
   height: ${width * 0.2};
   lineHeight: ${width * 0.2};
   textAlign: center;
   fontSize: 20;
-  width: ${width * 0.2};  
+  width: ${width * 0.4};
   margin: ${width * 0.05};
   overflow: hidden;
 `

@@ -24,6 +24,7 @@ export default class Game extends React.Component {
       wordRoots: [],
       choices: [],
       roots: [],
+      progress: 5,
       solvedRoots: []
     };
   }
@@ -94,7 +95,7 @@ export default class Game extends React.Component {
       );
     });
 
-    const choiceButtonsRows = _.chunk(choiceButtons, 3).map((buttons, i) => {
+    const choiceButtonsRows = _.chunk(choiceButtons, 2).map((buttons, i) => {
       return (<ChoiceButtonsRow key={i} >{buttons}</ChoiceButtonsRow>)
     });
 
@@ -115,6 +116,26 @@ export default class Game extends React.Component {
   };
 }
 
+const Container = styled.View`
+  alignSelf: center;
+  marginTop: ${height * 0.03};
+  width: ${width * 0.9};
+  flex: 1;
+`
+
+const PromptContainer = styled.View`
+  flex: 0.5;
+  alignItems: center;
+`
+
+const Prompt = styled.Text`
+  alignItems: center;
+  fontSize: 36;
+  textAlign: center;
+  width: ${width * 0.8};
+  marginTop: ${height * 0.03};
+
+`
 const AnswerPartsContainer = styled.View`
   alignItems: center;
   flexDirection: row;
@@ -126,27 +147,8 @@ const ChoiceButtonsContainer = styled.View`
   flexDirection: column;
   alignItems: center;
 `
-
 const ChoiceButtonsRow = styled.View`
   flex: 1;
   flexDirection: row;
   alignItems: center;
-`
-
-const Container = styled.View`
-  backgroundColor: #fff;
-  flex: 1;
-  margin: ${width * 0.05};
-`;
-
-const Prompt = styled.Text`
-  alignItems: center;
-  fontSize: 18;
-  textAlign: center;
-  width: ${width * 0.8};
-`
-const PromptContainer = styled.View`
-  flex: 1;
-  alignItems: center;
-  marginTop: ${height * 0.1};
 `

@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import GameDataManager from './Services/GameDataManager';
 import Game from './Components/Game';
@@ -13,10 +14,11 @@ export default class App extends React.Component {
       words: [],
       moduleId: 1,
       submoduleId: 1,
-      questionId: 1
+      questionId: 1,
     };
     this.importGameData();
   }
+
 
   importGameData = async () => {
     try {
@@ -54,11 +56,13 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <Game
-        question={this.state.question}
-        roots={this.state.roots}
-        nextQuestion={() => this.incrementCounterIds()}
-      />
+      <View style={{flex: 1, backgroundColor: '#F8EDD2'}}>
+        <Game
+          question={this.state.question}
+          roots={this.state.roots}
+          nextQuestion={() => this.incrementCounterIds()}
+        />
+      </View>
     );
   }
 }
