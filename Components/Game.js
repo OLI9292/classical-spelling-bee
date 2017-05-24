@@ -7,6 +7,8 @@ import { mapObject } from 'underscore';
 
 import AnswerPart from './AnswerPart';
 import ChoiceButton from './ChoiceButton';
+import ProgressBar from './ProgressBar';
+
 import FirebaseManager from '../Networking/FirebaseManager';
 import WordParsingService from '../Services/WordParsingService';
 
@@ -25,7 +27,7 @@ export default class Game extends React.Component {
 
   listenForChoices() {
     FirebaseManager.choices.on('value', (snap) => {
-      const choices = _.values(mapObject(snap.val(), function(val, key) { 
+      const choices = _.values(mapObject(snap.val(), function(val, key) {
         return { word: key, definition: val.definition };
       }));
       this.setState({ choices: choices });
@@ -41,7 +43,7 @@ export default class Game extends React.Component {
         definition: lastAnswer.definition
       });
     });
-  } 
+  }
 
   componentDidMount() {
     this.listenForChoices();
@@ -63,6 +65,7 @@ export default class Game extends React.Component {
 
     return (
       <Container>
+        <ProgressBar />
         <PromptContainer>
           <Prompt>Spell the word that means {this.state.definition}</Prompt>
           <AnswerPartsContainer>
@@ -107,7 +110,6 @@ const Prompt = styled.Text`
   textAlign: center;
   width: ${width * 0.8};
 `
-
 const PromptContainer = styled.View`
   flex: 1;
   alignItems: center;
