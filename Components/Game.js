@@ -1,51 +1,75 @@
 import React from 'react';
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
 import _ from 'underscore';
 import '../Library/helpers';
-import { mapObject } from 'underscore';
 
 import AnswerPart from './AnswerPart';
 import ChoiceButton from './ChoiceButton';
-import FirebaseManager from '../Networking/FirebaseManager';
-import WordParsingService from '../Services/WordParsingService';
 
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
 
 export default class Game extends React.Component {
-
   constructor(props) {
     super(props);
+
     this.state = {
       answerParts: [],
-      choices: []
+      choiceCount: 6,
+      wordRoots: [],
+      choices: [],
+      roots: [],
+      solvedRoots: []
     };
   }
 
-  listenForChoices() {
-    FirebaseManager.choices.on('value', (snap) => {
-      const choices = _.values(mapObject(snap.val(), function(val, key) { 
-        return { word: key, definition: val.definition };
-      }));
-      this.setState({ choices: choices });
+  /** 
+  /*  Replace underscores with answer and reset choices
+  **/
+  answered(root) {
+    const updatedAnswerParts = _.map(this.state.answerParts, (part) => {
+      if (part.valueSolved === root) { part.valueUnsolved = part.valueSolved }
+      return part;
     });
+    const solvedRoots = this.state.solvedRoots.concat([root]);
+    this.setState({ answerParts: updatedAnswerParts, solvedRoots: solvedRoots }, this.checkSolution)
   }
 
-  listenForWords() {
-    FirebaseManager.words.on('value', (snap) => {
-      const answers = _.values(mapObject(snap.val(), function(val, key) { return WordParsingService(val) }));
-      const lastAnswer = _.last(answers);
-      this.setState({
-        answerParts: lastAnswer.components,
-        definition: lastAnswer.definition
-      });
-    });
-  } 
+  checkSolution() {
+    if (this.state.solvedRoots.length === _.filter(this.state.answerParts, (a) => a.type === 'root').length) {
+      this.fillInRemaining()
+      setTimeout(() => this.props.nextQuestion(), 1000);
+    } else {
+      this.setState({ choices: this.randomChoices(this.state.answerParts, this.state.roots) })
+    }
+  }
 
-  componentDidMount() {
-    this.listenForChoices();
-    this.listenForWords();
+  componentWillReceiveProps(nextProps) {
+    this.setState({ answerParts: nextProps.question.components });
+    this.setState({ prompt: nextProps.question.value });
+    this.setState({ roots: nextProps.roots });
+    this.setState({ choices: this.randomChoices(nextProps.question.components, nextProps.roots) });
+  }
+
+  fillInRemaining() {
+    const updatedAnswerParts = _.map(this.state.answerParts, (part) => {
+      part.valueUnsolved = part.valueSolved;
+      return part;
+    });
+    this.setState({ answerParts: updatedAnswerParts });
+  }
+
+  /** 
+  /*  Get random red herrings roots and mix them with the roots of the word to display n possible options
+  **/
+  randomChoices(wordParts, roots) {
+    let wordRoots = _.filter(wordParts, (c) => c.type === 'root' && c.valueUnsolved.includes('_'))
+    wordRoots = _.map(wordRoots, (root) => ({ 'value': root.valueSolved, 'definition': root.definition, 'isAnswer': 'true' }));
+    let choices = _.nRandom(_.toArray(roots), this.state.choiceCount)
+    choices = _.reject(choices, (root) => _.contains(_.pluck(wordRoots, 'value').concat(this.state.solvedRoots), root.value));
+    choices = choices.slice(0, this.state.choiceCount - wordRoots.length).concat(wordRoots);
+    return _.shuffle(choices)
   }
 
   render() {
@@ -54,7 +78,15 @@ export default class Game extends React.Component {
     });
 
     const choiceButtons = this.state.choices.map((choice, i) => {
-      return (<ChoiceButton key={i} definition={choice.definition} word={choice.word}/>);
+      return (
+        <ChoiceButton 
+          key={i}
+          definition={choice.definition}
+          word={choice.value}
+          isAnswer={choice.isAnswer}
+          answered={(root) => this.answered(root)}
+        />
+      );
     });
 
     const choiceButtonsRows = _.chunk(choiceButtons, 3).map((buttons, i) => {
@@ -64,7 +96,7 @@ export default class Game extends React.Component {
     return (
       <Container>
         <PromptContainer>
-          <Prompt>Spell the word that means {this.state.definition}</Prompt>
+          <Prompt>Spell the word that means {this.state.prompt}</Prompt>
           <AnswerPartsContainer>
             {answerParts}
           </AnswerPartsContainer>
