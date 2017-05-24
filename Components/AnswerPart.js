@@ -12,6 +12,7 @@ export default class AnswerPart extends React.Component {
 const styles = StyleSheet.create({
   container: {
     margin: 2,
+    fontFamily: 'Avenir',
     color: '#C4C4C4',
     fontSize: 48
   }

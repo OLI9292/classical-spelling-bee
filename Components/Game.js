@@ -126,16 +126,18 @@ const Container = styled.View`
   width: ${width * 0.9};
   height: ${height * 0.95};
   flex: 1;
+  flexDirection: column;
 `
 
 const PromptContainer = styled.View`
-  flex: 0.5;
+  flex: .75;
   alignItems: center;
 `
 
 const Prompt = styled.Text`
   alignItems: center;
   fontSize: 36;
+  fontFamily: Avenir;
   textAlign: center;
   width: ${width * 0.8};
   marginTop: ${height * 0.03};
