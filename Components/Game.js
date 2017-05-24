@@ -11,28 +11,42 @@ const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
 
 export default class Game extends React.Component {
-
   constructor(props) {
     super(props);
 
     this.state = {
       answerParts: [],
-      choices: []
+      choiceCount: 6,
+      wordRoots: [],
+      choices: [],
+      roots: []
     };
   }
 
+  randomChoices(wordParts, roots) {
+    let wordRoots = _.filter(wordParts, (c) => c.type === 'root')
+    wordRoots = _.map(wordRoots, (root) => ({ 'value': root.valueSolved, 'definition': root.definition, 'isAnswer': 'true' }));
+    let choices = _.nRandom(_.toArray(roots), this.state.choiceCount)
+    choices = _.reject(choices, (root) => _.contains(_.pluck(wordRoots, 'value'), root.value));
+    choices = choices.slice(0, this.state.choiceCount - wordRoots.length).concat(wordRoots);
+    return _.shuffle(choices)
+  }
+
+  // Get random red herrings roots and mix them with the roots of the word to display n possible options
   componentWillReceiveProps(nextProps) {
     this.setState({ answerParts: nextProps.question.components });
     this.setState({ prompt: nextProps.question.value });
-    /**
-    /* Get random red herrings roots and mix them with the roots of the word to display n possible options
-    **/
-    let componentRoots = _.filter(nextProps.question.components, (c) => c.type === 'root')
-    componentRoots = _.map(componentRoots, (root) => ({ 'value': root.valueSolved, 'definition': root.definition }));
-    let choices = _.reject(_.nRandom(_.toArray(nextProps.roots), 6), (root) => _.contains(_.pluck(componentRoots, 'value'), root));
-    choices = choices.slice(0, choices.length - componentRoots.length).concat(componentRoots);
-    const shuffled = _.shuffle(choices)
-    this.setState({ choices: shuffled });
+    this.setState({ roots: nextProps.roots });
+    this.setState({ choices: this.randomChoices(nextProps.question.components, nextProps.roots) });
+  }
+
+  answered(root) {
+    this.setState({
+      answerParts: _.map(this.state.answerParts, (part) => {
+        if (part.valueSolved === root) { part.valueUnsolved = part.valueSolved; }
+        return part;
+      });
+    });
   }
 
   render() {
@@ -41,7 +55,15 @@ export default class Game extends React.Component {
     });
 
     const choiceButtons = this.state.choices.map((choice, i) => {
-      return (<ChoiceButton key={i} definition={choice.definition} word={choice.value}/>);
+      return (
+        <ChoiceButton 
+          key={i}
+          definition={choice.definition}
+          word={choice.value}
+          isAnswer={choice.isAnswer}
+          answered={(root) => this.answered(root)}
+        />
+      );
     });
 
     const choiceButtonsRows = _.chunk(choiceButtons, 3).map((buttons, i) => {

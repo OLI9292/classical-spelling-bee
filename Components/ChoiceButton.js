@@ -4,23 +4,14 @@ import { TouchableOpacity, Dimensions} from 'react-native';
 
 const width = Dimensions.get('window').width;
 
-const onButtonPress = () => {
-  Alert.alert('Button has been pressed!');
-};
-
 export default class ChoiceButton extends React.Component {
-
   constructor(props) {
     super(props);
-    this.state = {
-      answerParts: [],
-      choices: []
-    };
   }
 
   render() {
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => this.props.isAnswer && this.props.answered(this.props.word) }>
         <Choice>{this.props.word}</Choice>
       </TouchableOpacity>
     );
