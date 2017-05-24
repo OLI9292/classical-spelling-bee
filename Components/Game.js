@@ -19,20 +19,32 @@ export default class Game extends React.Component {
       choiceCount: 6,
       wordRoots: [],
       choices: [],
-      roots: []
+      roots: [],
+      solvedRoots: []
     };
   }
 
-  randomChoices(wordParts, roots) {
-    let wordRoots = _.filter(wordParts, (c) => c.type === 'root')
-    wordRoots = _.map(wordRoots, (root) => ({ 'value': root.valueSolved, 'definition': root.definition, 'isAnswer': 'true' }));
-    let choices = _.nRandom(_.toArray(roots), this.state.choiceCount)
-    choices = _.reject(choices, (root) => _.contains(_.pluck(wordRoots, 'value'), root.value));
-    choices = choices.slice(0, this.state.choiceCount - wordRoots.length).concat(wordRoots);
-    return _.shuffle(choices)
+  /** 
+  /*  Replace underscores with answer and reset choices
+  **/
+  answered(root) {
+    const updatedAnswerParts = _.map(this.state.answerParts, (part) => {
+      if (part.valueSolved === root) { part.valueUnsolved = part.valueSolved }
+      return part;
+    });
+    const solvedRoots = this.state.solvedRoots.concat([root]);
+    this.setState({ answerParts: updatedAnswerParts, solvedRoots: solvedRoots }, this.checkSolution)
   }
 
-  // Get random red herrings roots and mix them with the roots of the word to display n possible options
+  checkSolution() {
+    if (this.state.solvedRoots.length === _.filter(this.state.answerParts, (a) => a.type === 'root').length) {
+      this.fillInRemaining()
+      setTimeout(() => this.props.nextQuestion(), 1000);
+    } else {
+      this.setState({ choices: this.randomChoices(this.state.answerParts, this.state.roots) })
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     this.setState({ answerParts: nextProps.question.components });
     this.setState({ prompt: nextProps.question.value });
@@ -40,13 +52,24 @@ export default class Game extends React.Component {
     this.setState({ choices: this.randomChoices(nextProps.question.components, nextProps.roots) });
   }
 
-  answered(root) {
-    this.setState({
-      answerParts: _.map(this.state.answerParts, (part) => {
-        if (part.valueSolved === root) { part.valueUnsolved = part.valueSolved }
-        return part;
-      })
+  fillInRemaining() {
+    const updatedAnswerParts = _.map(this.state.answerParts, (part) => {
+      part.valueUnsolved = part.valueSolved;
+      return part;
     });
+    this.setState({ answerParts: updatedAnswerParts });
+  }
+
+  /** 
+  /*  Get random red herrings roots and mix them with the roots of the word to display n possible options
+  **/
+  randomChoices(wordParts, roots) {
+    let wordRoots = _.filter(wordParts, (c) => c.type === 'root' && c.valueUnsolved.includes('_'))
+    wordRoots = _.map(wordRoots, (root) => ({ 'value': root.valueSolved, 'definition': root.definition, 'isAnswer': 'true' }));
+    let choices = _.nRandom(_.toArray(roots), this.state.choiceCount)
+    choices = _.reject(choices, (root) => _.contains(_.pluck(wordRoots, 'value').concat(this.state.solvedRoots), root.value));
+    choices = choices.slice(0, this.state.choiceCount - wordRoots.length).concat(wordRoots);
+    return _.shuffle(choices)
   }
 
   render() {

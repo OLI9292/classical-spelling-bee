@@ -1,23 +1,23 @@
-/*  Converts a FireBase word into a UI-compatable object 
-
-Example input:
-  temporal
-    definition: @making@3 one @sleepy@1
-    part_of_speech: adjective
-    separated: somn.i#.fac.ient
-
-Example output:
-  "value": "somnifacient",
-  "components": [
-    {"valueSolved": "somn", "valueUnsolved": "____", "type": "root", "definition": "sleepy"}, 
-    {"valueSolved": "i", "valueUnsolved": "_", "type": "separator"},
-    {"valueSolved": "fac", "valueUnsolved": "___", "type": "root", "definition": "making"},
-    {"valueSolved": "ient", "valueUnsolved": "____", "type": "unknown"}
-  ],
-  "definition":"making one sleepy"
-*/
 import _ from 'underscore';
 
+/** Convert a FireBase word into a UI-compatable object 
+/*
+/*  Example input:
+/*    temporal
+/*      definition: @making@3 one @sleepy@1
+/*      part_of_speech: adjective
+/*      separated: somn.i#.fac.ient
+/*  
+/*  Example output:
+/*    "value": "somnifacient",
+/*    "components": [
+/*      {"valueSolved": "somn", "valueUnsolved": "____", "type": "root", "definition": "sleepy"}, 
+/*      {"valueSolved": "i", "valueUnsolved": "_", "type": "separator"},
+/*      {"valueSolved": "fac", "valueUnsolved": "___", "type": "root", "definition": "making"},
+/*      {"valueSolved": "ient", "valueUnsolved": "____", "type": "unknown"}
+/*    ],
+/*    "definition":"making one sleepy"
+**/
 const WordParsingService = (firebaseWord) => {
   let components;
   let definition = firebaseWord.definition;
@@ -45,6 +45,9 @@ const cleanDefinition = (definition) => {
   return definition.replace(new RegExp(/[0-9@]/, 'g'), '');
 }
 
+/**
+/*  Split word into components
+**/
 const parseComponents = (separated) => {
   let clean = separated.replace(new RegExp('#.', 'g'), '#');
   let components = [];
@@ -74,6 +77,9 @@ const parseComponents = (separated) => {
   return components;
 };
 
+/**
+/*  Identify roots using "@" in definition
+**/
 const parseDefinition = (components, definition) => {
   let componentDefinition = '';
   let recordingComponentDefinition = false;

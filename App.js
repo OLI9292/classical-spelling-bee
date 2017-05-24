@@ -23,16 +23,42 @@ export default class App extends React.Component {
       this.state.questionLists = await GameDataManager.import('questionLists');
       this.state.roots = await GameDataManager.import('roots');
       this.state.words = await GameDataManager.import('words');
-      const question = this.state.words[this.state.questionLists[`module_${1}`][`submodule_${1}`][`question_${1}`]];
-      this.setState({ question: question });
+      this.nextQuestion();
     } catch(error) {
       console.log('App.js -> data not found');
     }
   }
 
+  incrementCounterIds() {
+    if (this.state.questionId === 10) {
+      if (this.state.submoduleId === 10) {
+        if (this.state.moduleId === 10) {
+          // TODO: game over
+        } else {
+          this.setState({ moduleId: 1, submoduleId: 1, questionId: this.state.moduleId++ }, this.nextQuestion())
+        }
+      } else {
+        this.setState({ submoduleId: this.state.submoduleId++, questionId: 1 }, this.nextQuestion())
+      }
+    } else {
+      this.setState({ questionId: this.state.questionId++ }, this.nextQuestion())
+    }
+  }
+
+  nextQuestion() {
+    const question = this.state.words[
+      this.state.questionLists[`module_${this.state.moduleId}`][`submodule_${this.state.submoduleId}`][`question_${this.state.questionId}`]
+    ];
+    this.setState({ question: question });
+  }
+
   render() {
     return (
-      <Game question={this.state.question} roots={this.state.roots}/>
+      <Game
+        question={this.state.question}
+        roots={this.state.roots}
+        nextQuestion={() => this.incrementCounterIds()}
+      />
     );
   }
 }

@@ -4,6 +4,10 @@ import _ from 'underscore';
 import { mapObject } from 'underscore';
 import { AsyncStorage } from 'react-native';
 
+/**
+/*  First try to read data from storage
+/*  If data doesn't exist: fetch from Firebase -> save in storage -> try again
+**/
 const GameDataManager = {
   import: async (type) => {
     let data = await asyncStorage(type);
@@ -15,7 +19,9 @@ const GameDataManager = {
   }
 };
 
-// Firebase Queries
+/**
+/*  Firebase Queries
+**/
 const fetchQuestionLists = async function () {
   FirebaseManager.questionLists.on('value', (snapshot) => save('questionLists', snapshot.val()));
 };
@@ -34,7 +40,9 @@ const fetchWords = async function () {
   });
 };
 
-// Device Storage
+/**
+/*  Device Storage
+**/
 const asyncStorage = async (item) => {
   try {
     const data = await AsyncStorage.getItem(item);
