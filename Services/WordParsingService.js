@@ -53,7 +53,7 @@ const parseComponents = (separated) => {
     const char = clean.charAt(i);
     if (_.contains(['.', '#'], char) || (i === clean.length)) {
       if (!componentString) {
-        throw { name : 'EmptyComponentString', message : `Word.js -> error parsing Firebase word` };
+        throw { name : 'EmptyComponentString', message : `Word.js -> error parsing ${separated}` };
       } else {
         const type = char === '#' ? 'separator' : 'unknown';
         valueUnderscores = Array(componentString.length).join('_');
