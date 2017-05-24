@@ -7,6 +7,7 @@ import '../Library/helpers';
 import AnswerPart from './AnswerPart';
 import ChoiceButton from './ChoiceButton';
 import ProgressBar from './ProgressBar';
+import BottomBar from './BottomBar';
 
 import FirebaseManager from '../Networking/FirebaseManager';
 import WordParsingService from '../Services/WordParsingService';
@@ -111,15 +112,19 @@ export default class Game extends React.Component {
         <ChoiceButtonsContainer>
           {choiceButtonsRows}
         </ChoiceButtonsContainer>
+        <BottomBar />
       </Container>
     );
   };
 }
 
+
 const Container = styled.View`
   alignSelf: center;
   marginTop: ${height * 0.03};
+  marginBottom: ${height * 0.03};
   width: ${width * 0.9};
+  height: ${height * 0.95};
   flex: 1;
 `
 
