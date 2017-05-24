@@ -6,6 +6,10 @@ import '../Library/helpers';
 
 import AnswerPart from './AnswerPart';
 import ChoiceButton from './ChoiceButton';
+import ProgressBar from './ProgressBar';
+
+import FirebaseManager from '../Networking/FirebaseManager';
+import WordParsingService from '../Services/WordParsingService';
 
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
@@ -23,6 +27,7 @@ export default class Game extends React.Component {
       solvedRoots: []
     };
   }
+
 
   /** 
   /*  Replace underscores with answer and reset choices
@@ -57,6 +62,7 @@ export default class Game extends React.Component {
       part.valueUnsolved = part.valueSolved;
       return part;
     });
+
     this.setState({ answerParts: updatedAnswerParts });
   }
 
@@ -95,6 +101,7 @@ export default class Game extends React.Component {
 
     return (
       <Container>
+        <ProgressBar progress={this.state.progress} />
         <PromptContainer>
           <Prompt>Spell the word that means {this.state.prompt}</Prompt>
           <AnswerPartsContainer>
@@ -139,7 +146,6 @@ const Prompt = styled.Text`
   textAlign: center;
   width: ${width * 0.8};
 `
-
 const PromptContainer = styled.View`
   flex: 1;
   alignItems: center;
