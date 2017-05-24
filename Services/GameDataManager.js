@@ -10,10 +10,17 @@ import { AsyncStorage } from 'react-native';
 **/
 const GameDataManager = {
   import: async (type) => {
-    let data = await asyncStorage(type);
+    let data = null
     if (data === null) {
-      await fetchWords;
-      data = await asyncStorage('words');
+      switch(type) {
+        case 'questionLists':
+          await fetchQuestionLists();
+        case 'roots':
+          await fetchRoots();
+        case 'words':
+          await fetchWords();
+      }
+      data = await asyncStorage(type);
     }
     return data;
   }

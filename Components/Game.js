@@ -28,8 +28,7 @@ export default class Game extends React.Component {
     };
   }
 
-
-  /** 
+  /**
   /*  Replace underscores with answer and reset choices
   **/
   answered(root) {
@@ -66,7 +65,7 @@ export default class Game extends React.Component {
     this.setState({ answerParts: updatedAnswerParts });
   }
 
-  /** 
+  /**
   /*  Get random red herrings roots and mix them with the roots of the word to display n possible options
   **/
   randomChoices(wordParts, roots) {
@@ -85,7 +84,7 @@ export default class Game extends React.Component {
 
     const choiceButtons = this.state.choices.map((choice, i) => {
       return (
-        <ChoiceButton 
+        <ChoiceButton
           key={i}
           definition={choice.definition}
           word={choice.value}
