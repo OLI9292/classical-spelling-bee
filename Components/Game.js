@@ -29,6 +29,9 @@ export default class Game extends React.Component {
       progress: 5,
       solvedRoots: [],
       rootsCount: 0
+      progress: 1,
+      totalWords: 5,
+      solvedRoots: []
     };
   }
 
@@ -47,6 +50,7 @@ export default class Game extends React.Component {
   checkSolution() {
     if (this.state.solvedRoots.length === this.state.rootsCount) {
       this.fillInRemaining()
+      this.setState({ progress: this.state.progress + 1 })
       setTimeout(() => this.props.nextQuestion(), 500);
     } else {
       this.setState({ choices: this.randomChoices(this.state.answerParts, this.state.roots) })
@@ -114,7 +118,7 @@ export default class Game extends React.Component {
 
     return (
       <Container>
-        <ProgressBar progress={this.state.progress} />
+        <ProgressBar progress={this.state.progress} totalWords={this.state.totalWords} />
           <Prompt text={this.state.prompt} hint={this.state.hint} definitions={rootDefinitions}/>
           <AnswerPartsContainer>
             {answerParts}
@@ -134,6 +138,8 @@ const Container = styled.View`
   marginBottom: ${height * 0.03};
   width: ${width * 0.9};
   height: ${height * 0.95};
+  flex: 1;
+  justifyContent: flex-start;
 `
 
 const AnswerPartsContainer = styled.View`
@@ -142,16 +148,16 @@ const AnswerPartsContainer = styled.View`
   justifyContent: center;
   marginBottom: ${height * 0.05};
 `
+
 const ChoiceButtonsContainer = styled.View`
   flex: 1;
-  justifyContent: flex-end;
-  flexDirection: column;
   alignItems: center;
   marginBottom: ${height * 0.03};
 `
+
 const ChoiceButtonsRow = styled.View`
-  marginBottom: ${height * 0.02};
+  flex: 0.5;
   flexDirection: row;
-  flex: 1;
-  alignItems: center;
+  marginBottom: ${height * 0.02};
+
 `

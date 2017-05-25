@@ -8,11 +8,7 @@ const height = Dimensions.get('window').height;
 
 export default class ProgressBar extends React.Component {
   render() {
-    var completeWidth = width * 0.9;
-
-    var fillWidth = this.props.progress / 10 * completeWidth;
-    if (fillWidth <= 1 ) { fillwidth = 3.5};
-
+    var fillWidth = this.props.progress / this.props.totalWords * width * 0.9;
     return (
       <View style={styles.outerBar}>
         <View style={[styles.innerBar, { width: fillWidth }]} />

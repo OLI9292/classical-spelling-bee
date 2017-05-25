@@ -23,7 +23,7 @@ const Choice = styled.Text`
   fontFamily: Avenir;
   borderWidth: 5;
   borderColor: #C4C4C4;
-  color: black  ;
+  color: black ;
   height: ${width * 0.15};
   lineHeight: ${width * 0.15};
   textAlign: center;
