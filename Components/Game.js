@@ -19,7 +19,6 @@ const width = Dimensions.get('window').width;
 export default class Game extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       autohintOn: false,
       hint: 0,
@@ -27,12 +26,11 @@ export default class Game extends React.Component {
       choiceCount: 6,
       choices: [],
       allRoots: [],
-      progress: 5,
       solvedRoots: [],
       wordRoots: [],
-      progress: 1,
-      totalWords: 5,
-      solvedRoots: []
+      progress: 0,
+      totalWords: 10,
+      moduleId: 1
     };
   }
 
@@ -45,7 +43,7 @@ export default class Game extends React.Component {
       return part;
     });
     const solvedRoots = this.state.solvedRoots.concat([root.toLowerCase()]);
-    this.setState({ 
+    this.setState({
       answerParts: updatedAnswerParts,
       solvedRoots: solvedRoots,
       hint: Math.min(1, this.state.hint)
@@ -66,15 +64,24 @@ export default class Game extends React.Component {
   }
 
   /**
-  /*  Check if all roots have been solved, fill in remaining components, and advance to next question 
+  /*  Check if all roots have been solved, fill in remaining components, and advance to next question
   **/
   checkSolution() {
     if (this.state.solvedRoots.length === this.state.wordRoots.length) {
       this.fillInRemaining()
-      this.setState({ progress: this.state.progress + 1 })
-      setTimeout(() => this.props.nextQuestion(this.state.autohintOn), 500);
+      const newProgress = this.state.progress + 1;
+      this.setState({ progress: newProgress}, () => {
+        this.checkLevelComplete()
+      });
+      setTimeout(() => this.props.nextQuestion(this.state.autohintOn), 1500);
     } else {
       this.setState({choices: this.randomChoices(this.state.answerParts, this.state.allRoots) }, this.autohint)
+    }
+  }
+
+  checkLevelComplete() {
+    if (this.state.progress / this.state.totalWords === 1) {
+      this.setState({ progress: 0, moduleId: this.state.moduleId + 1 })
     }
   }
 
@@ -163,9 +170,10 @@ export default class Game extends React.Component {
           {choiceButtonsRows}
         </ChoiceButtonsContainer>
         <BottomBar
+          currentLevel={this.state.moduleId}
           autohintOn={this.state.autohintOn}
           toggleAutohint={() => this.toggleAutohint() }
-          hintDisabled={this.state.autohintOn || this.state.hint === 2} 
+          hintDisabled={this.state.autohintOn || this.state.hint === 2}
           hint={() => this.incrementHint()}
         />
       </Container>
@@ -188,6 +196,8 @@ const AnswerPartsContainer = styled.View`
   flexDirection: row;
   justifyContent: center;
   marginBottom: ${height * 0.05};
+  marginTop: ${height * 0.05};
+
 `
 
 const ChoiceButtonsContainer = styled.View`

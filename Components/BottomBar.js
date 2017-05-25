@@ -19,6 +19,7 @@ export default class BottomBar extends React.Component {
         <TouchableOpacity onPress={() => this.props.toggleAutohint()}>
           <AutoHint source={this.props.autohintOn ? autoHintPauseImage : autoHintStartImage}/>
         </TouchableOpacity>
+        <Level>Level {this.props.currentLevel}  </Level>
         <TouchableOpacity onPress={this.props.hint}>
           <Hint disabled={this.props.hintDisabled} source={hintImage} />
         </TouchableOpacity>
@@ -30,6 +31,15 @@ export default class BottomBar extends React.Component {
 const AutoHint = styled.Image`
   height: ${width * 0.12};
   width: ${width * 0.12};
+`
+
+const Level = styled.Text`
+  fontSize: 28;
+  fontFamily: Avenir-Medium;
+  textAlign: center;
+  color: #C4C4C4;
+  marginTop: ${width * 0.02};
+
 `
 
 const Container = styled.View`
