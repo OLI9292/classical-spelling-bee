@@ -7,6 +7,7 @@ import '../Library/helpers';
 import AnswerPart from './AnswerPart';
 import ChoiceButton from './ChoiceButton';
 import ProgressBar from './ProgressBar';
+import BottomBar from './BottomBar';
 
 import FirebaseManager from '../Networking/FirebaseManager';
 import WordParsingService from '../Services/WordParsingService';
@@ -24,6 +25,7 @@ export default class Game extends React.Component {
       wordRoots: [],
       choices: [],
       roots: [],
+      progress: 5,
       solvedRoots: []
     };
   }
@@ -51,7 +53,7 @@ export default class Game extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({ answerParts: nextProps.question.components });
-    this.setState({ prompt: nextProps.question.value });
+    this.setState({ prompt: nextProps.question.definition });
     this.setState({ roots: nextProps.roots });
     this.setState({ choices: this.randomChoices(nextProps.question.components, nextProps.roots) });
   }
@@ -94,59 +96,58 @@ export default class Game extends React.Component {
       );
     });
 
-    const choiceButtonsRows = _.chunk(choiceButtons, 3).map((buttons, i) => {
+    const choiceButtonsRows = _.chunk(choiceButtons, 2).map((buttons, i) => {
       return (<ChoiceButtonsRow key={i} >{buttons}</ChoiceButtonsRow>)
     });
 
     return (
       <Container>
         <ProgressBar progress={this.state.progress} />
-        <PromptContainer>
-          <Prompt>Spell the word that means {this.state.prompt}</Prompt>
+          <Prompt>{this.state.prompt}</Prompt>
           <AnswerPartsContainer>
             {answerParts}
           </AnswerPartsContainer>
-        </PromptContainer>
         <ChoiceButtonsContainer>
           {choiceButtonsRows}
         </ChoiceButtonsContainer>
+        <BottomBar />
       </Container>
     );
   };
 }
 
+
+const Container = styled.View`
+  alignSelf: center;
+  marginTop: ${height * 0.03};
+  marginBottom: ${height * 0.03};
+  width: ${width * 0.9};
+  height: ${height * 0.95};
+`
+
+const Prompt = styled.Text`
+  fontSize: 32;
+  fontFamily: Avenir-Medium;
+  textAlign: center;
+  marginTop: ${height * 0.03};
+
+`
 const AnswerPartsContainer = styled.View`
   alignItems: center;
   flexDirection: row;
   justifyContent: center;
-  marginTop: ${height * 0.05};
+  marginBottom: ${height * 0.05};
 `
 const ChoiceButtonsContainer = styled.View`
   flex: 1;
+  justifyContent: flex-end;
   flexDirection: column;
   alignItems: center;
+  marginBottom: ${height * 0.03};
 `
-
 const ChoiceButtonsRow = styled.View`
-  flex: 1;
+  marginBottom: ${height * 0.02};
   flexDirection: row;
-  alignItems: center;
-`
-
-const Container = styled.View`
-  backgroundColor: #fff;
-  flex: 1;
-  margin: ${width * 0.05};
-`;
-
-const Prompt = styled.Text`
-  alignItems: center;
-  fontSize: 18;
-  textAlign: center;
-  width: ${width * 0.8};
-`
-const PromptContainer = styled.View`
   flex: 1;
   alignItems: center;
-  marginTop: ${height * 0.1};
 `

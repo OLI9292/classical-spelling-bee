@@ -23,12 +23,12 @@ export default class ProgressBar extends React.Component {
 }
 const styles = StyleSheet.create({
   outerBar: {
-    backgroundColor: 'grey',
+    backgroundColor: '#FADC3D',
     height: height * 0.05,
-    marginTop: height * 0.01,
+    marginTop: height * 0.03,
   },
   innerBar: {
-    backgroundColor: 'blue',
+    backgroundColor: '#FEBF00',
     height: height * 0.05,
   }
 });

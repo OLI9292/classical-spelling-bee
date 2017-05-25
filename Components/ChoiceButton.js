@@ -12,22 +12,23 @@ export default class ChoiceButton extends React.Component {
   render() {
     return (
       <TouchableOpacity onPress={() => this.props.isAnswer && this.props.answered(this.props.word) }>
-        <Choice>{this.props.word}</Choice>
+        <Choice>{this.props.word.toUpperCase()}</Choice>
       </TouchableOpacity>
     );
   }
 }
 
 const Choice = styled.Text`
-  backgroundColor: blue;
   borderRadius: 10;
-  borderWidth: 2;
-  color: white;
-  height: ${width * 0.2};
-  lineHeight: ${width * 0.2};
+  fontFamily: Avenir;
+  borderWidth: 5;
+  borderColor: #C4C4C4;
+  color: black  ;
+  height: ${width * 0.15};
+  lineHeight: ${width * 0.15};
   textAlign: center;
   fontSize: 20;
-  width: ${width * 0.2};  
+  width: ${width * 0.4};
   margin: ${width * 0.05};
   overflow: hidden;
 `
