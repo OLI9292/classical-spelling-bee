@@ -10,7 +10,7 @@ import { AsyncStorage } from 'react-native';
 **/
 const GameDataManager = {
   import: async (type) => {
-    let data = null
+    let data = await asyncStorage(type);
     if (data === null) {
       switch(type) {
         case 'questionLists':

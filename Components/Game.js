@@ -20,11 +20,12 @@ export default class Game extends React.Component {
 
     this.state = {
       answerParts: [],
-      choiceCount: 6,
-      wordRoots: [],
       choices: [],
+      choiceCount: 6,
       roots: [],
-      solvedRoots: []
+      rootsCount: 0,
+      solvedRoots: [],
+      wordRoots: []
     };
   }
 
@@ -41,7 +42,7 @@ export default class Game extends React.Component {
   }
 
   checkSolution() {
-    if (this.state.solvedRoots.length === _.filter(this.state.answerParts, (a) => a.type === 'root').length) {
+    if (this.state.solvedRoots.length === this.state.rootsCount) {
       this.fillInRemaining()
       setTimeout(() => this.props.nextQuestion(), 1000);
     } else {
@@ -50,10 +51,14 @@ export default class Game extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ answerParts: nextProps.question.components });
-    this.setState({ prompt: nextProps.question.value });
-    this.setState({ roots: nextProps.roots });
-    this.setState({ choices: this.randomChoices(nextProps.question.components, nextProps.roots) });
+    this.setState({
+      answerParts: nextProps.question.components,
+      choices: this.randomChoices(nextProps.question.components, nextProps.roots),
+      prompt: nextProps.question.value,
+      roots: nextProps.roots,
+      rootsCount: _.filter(nextProps.question.components, (a) => a.type === 'root').length,
+      solvedRoots: []
+    });
   }
 
   fillInRemaining() {
