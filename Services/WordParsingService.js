@@ -28,7 +28,7 @@ const WordParsingService = (firebaseWord) => {
     return null;
   }
   components = parseDefinition(components, definition);
-  definition = cleanDefinition(definition);
+  definition = cleanDefinition(definition, components);
   value = _.pluck(components, 'valueSolved').join('_');
   if (!definition || !value) {
     console.log(`Word.js -> missing data for ${definition ? definition : value}`)
@@ -41,8 +41,11 @@ const WordParsingService = (firebaseWord) => {
   }
 };
 
-const cleanDefinition = (definition) => {
-  return definition.replace(new RegExp(/[0-9@]/, 'g'), '');
+const cleanDefinition = (definition, components) => {
+  let rootDefinitions = _.pluck(_.filter(components, (c) => c.type === 'root'), 'definition')
+  let split = definition.replace(RegExp(/[0-9@]/, 'g'), '').split(' ');
+  split = _.map(split, (w) => ({ value: w, isRoot: _.contains(rootDefinitions, w.replace(',', '')) }));
+  return split;
 }
 
 /**
