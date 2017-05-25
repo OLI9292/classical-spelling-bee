@@ -13,7 +13,7 @@ export default class Prompt extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ boldAndUppercaseRoots: nextProps.hint === 1 })
+    this.setState({ boldAndUppercaseRoots: nextProps.hint > 0 })
   }
 
   render() {

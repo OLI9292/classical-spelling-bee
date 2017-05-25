@@ -25,10 +25,10 @@ export default class Game extends React.Component {
       answerParts: [],
       choiceCount: 6,
       choices: [],
-      roots: [],
+      allRoots: [],
       progress: 5,
       solvedRoots: [],
-      rootsCount: 0
+      wordRoots: [],
       progress: 1,
       totalWords: 5,
       solvedRoots: []
@@ -40,20 +40,23 @@ export default class Game extends React.Component {
   **/
   answered(root) {
     const updatedAnswerParts = _.map(this.state.answerParts, (part) => {
-      if (part.valueSolved === root) { part.valueUnsolved = part.valueSolved }
+      if (part.valueSolved === root.toLowerCase()) { part.valueUnsolved = part.valueSolved }
       return part;
     });
-    const solvedRoots = this.state.solvedRoots.concat([root]);
-    this.setState({ answerParts: updatedAnswerParts, solvedRoots: solvedRoots }, this.checkSolution)
+    const solvedRoots = this.state.solvedRoots.concat([root.toLowerCase()]);
+    this.setState({ answerParts: updatedAnswerParts, solvedRoots: solvedRoots, hint: Math.min(1, this.state.hint) }, this.checkSolution)
   }
 
+  /**
+  /*  Check if all roots have been solved, fill in remaining components, and advance to next question 
+  **/
   checkSolution() {
-    if (this.state.solvedRoots.length === this.state.rootsCount) {
+    if (this.state.solvedRoots.length === this.state.wordRoots.length) {
       this.fillInRemaining()
       this.setState({ progress: this.state.progress + 1 })
       setTimeout(() => this.props.nextQuestion(), 500);
     } else {
-      this.setState({ choices: this.randomChoices(this.state.answerParts, this.state.roots) })
+      this.setState({ choices: this.randomChoices(this.state.answerParts, this.state.allRoots) })
     }
   }
 
@@ -63,12 +66,15 @@ export default class Game extends React.Component {
       choices: this.randomChoices(nextProps.question.components, nextProps.roots),
       hint: 0,
       prompt: nextProps.question.definition,
-      roots: nextProps.roots,
-      rootsCount: _.filter(nextProps.question.components, (a) => a.type === 'root').length,
+      allRoots: nextProps.roots,
+      wordRoots: _.filter(nextProps.question.components, (a) => a.type === 'root'),
       solvedRoots: []
     });
   }
 
+  /**
+  /*  Fill in non-root components
+  **/
   fillInRemaining() {
     const updatedAnswerParts = _.map(this.state.answerParts, (part) => {
       part.valueUnsolved = part.valueSolved;
@@ -99,13 +105,16 @@ export default class Game extends React.Component {
     });
 
     const choiceButtons = this.state.choices.map((choice, i) => {
+      const nextUnsolvedRoot = _.find(_.pluck(this.state.wordRoots, 'valueSolved'), (w) => !_.contains(this.state.solvedRoots, w));
+      const displayHint = (this.state.hint === 2) && nextUnsolvedRoot && (choice.value === nextUnsolvedRoot);
       return (
         <ChoiceButton
-          key={i}
-          definition={choice.definition}
-          word={choice.value}
-          isAnswer={choice.isAnswer}
           answered={(root) => this.answered(root)}
+          definition={choice.definition}
+          displayHint={displayHint}
+          isAnswer={choice.isAnswer}
+          key={i}
+          word={choice.value}
         />
       );
     });
