@@ -118,13 +118,14 @@ export default class Game extends React.Component {
   };
 }
 
-
 const Container = styled.View`
   alignSelf: center;
   marginTop: ${height * 0.03};
   marginBottom: ${height * 0.03};
   width: ${width * 0.9};
   height: ${height * 0.95};
+  flex: 1;
+  justifyContent: flex-start;
 `
 
 const Prompt = styled.Text`
@@ -132,6 +133,7 @@ const Prompt = styled.Text`
   fontFamily: Avenir-Medium;
   textAlign: center;
   marginTop: ${height * 0.03};
+  marginBottom: ${height * 0.05};
 
 `
 const AnswerPartsContainer = styled.View`
@@ -142,14 +144,12 @@ const AnswerPartsContainer = styled.View`
 `
 const ChoiceButtonsContainer = styled.View`
   flex: 1;
-  justifyContent: flex-end;
-  flexDirection: column;
   alignItems: center;
   marginBottom: ${height * 0.03};
 `
 const ChoiceButtonsRow = styled.View`
-  marginBottom: ${height * 0.02};
+  flex: 0.5;
   flexDirection: row;
-  flex: 1;
-  alignItems: center;
+  marginBottom: ${height * 0.02};
+
 `
