@@ -169,13 +169,15 @@ export default class Game extends React.Component {
         <ChoiceButtonsContainer>
           {choiceButtonsRows}
         </ChoiceButtonsContainer>
-        <BottomBar
-          currentLevel={this.state.moduleId}
-          autohintOn={this.state.autohintOn}
-          toggleAutohint={() => this.toggleAutohint() }
-          hintDisabled={this.state.autohintOn || this.state.hint === 2}
-          hint={() => this.incrementHint()}
-        />
+        <BottomBarContainer>
+          <BottomBar
+            currentLevel={this.state.moduleId}
+            autohintOn={this.state.autohintOn}
+            toggleAutohint={() => this.toggleAutohint() }
+            hintDisabled={this.state.autohintOn || this.state.hint === 2}
+            hint={() => this.incrementHint()}
+          />
+        </BottomBarContainer>
       </Container>
     );
   };
@@ -197,13 +199,19 @@ const AnswerPartsContainer = styled.View`
   justifyContent: center;
   marginBottom: ${height * 0.05};
   marginTop: ${height * 0.05};
+`
 
+const BottomBarContainer = styled.View`
+  marginTop: ${height * 0.05};
+  bottom: 0;
 `
 
 const ChoiceButtonsContainer = styled.View`
   flex: 1;
   alignItems: center;
   marginBottom: ${height * 0.03};
+  maxHeight: ${height * 0.4};
+
 `
 
 const ChoiceButtonsRow = styled.View`

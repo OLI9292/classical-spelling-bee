@@ -31,6 +31,8 @@ export default class BottomBar extends React.Component {
 const AutoHint = styled.Image`
   height: ${width * 0.12};
   width: ${width * 0.12};
+  flex: 1;
+  alignSelf: flex-start;
 `
 
 const Level = styled.Text`
@@ -39,16 +41,19 @@ const Level = styled.Text`
   textAlign: center;
   color: #C4C4C4;
   marginTop: ${width * 0.02};
+  flex: 1;
+  alignSelf: center;
+
 
 `
-
 const Container = styled.View`
   flexDirection: row;
-  justifyContent: space-between;
 `
 
 const Hint = styled.Image`
   height: ${width * 0.12};
   opacity: ${props => props.disabled ? 0.3 : 1};
   width: ${width * 0.12};
+  alignSelf: flex-end;
+
 `
