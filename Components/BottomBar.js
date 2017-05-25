@@ -9,23 +9,18 @@ import hintImage from '../Assets/Images/Hint.png';
 const width = Dimensions.get('window').width;
 
 export default class BottomBar extends React.Component {
-
   constructor(props) {
     super(props);
-
-    this.state = {
-      isPlaying: false
-    };
   }
 
   render() {
     return (
       <Container>
-        <TouchableOpacity onPress={() => this.setState ({isPlaying: !this.state.isPlaying}) }>
-          <AutoHint source={this.state.isPlaying ? autoHintPauseImage : autoHintStartImage}/>
+        <TouchableOpacity onPress={() => this.props.toggleAutohint()}>
+          <AutoHint source={this.props.autohintOn ? autoHintPauseImage : autoHintStartImage}/>
         </TouchableOpacity>
         <TouchableOpacity onPress={this.props.hint}>
-          <Hint source={hintImage} />
+          <Hint disabled={this.props.hintDisabled} source={hintImage} />
         </TouchableOpacity>
       </Container>
     );
@@ -44,5 +39,6 @@ const Container = styled.View`
 
 const Hint = styled.Image`
   height: ${width * 0.12};
+  opacity: ${props => props.disabled ? 0.3 : 1};
   width: ${width * 0.12};
 `

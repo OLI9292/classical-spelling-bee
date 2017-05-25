@@ -21,6 +21,7 @@ export default class Game extends React.Component {
     super(props);
 
     this.state = {
+      autohintOn: false,
       hint: 0,
       answerParts: [],
       choiceCount: 6,
@@ -44,7 +45,24 @@ export default class Game extends React.Component {
       return part;
     });
     const solvedRoots = this.state.solvedRoots.concat([root.toLowerCase()]);
-    this.setState({ answerParts: updatedAnswerParts, solvedRoots: solvedRoots, hint: Math.min(1, this.state.hint) }, this.checkSolution)
+    this.setState({ 
+      answerParts: updatedAnswerParts,
+      solvedRoots: solvedRoots,
+      hint: Math.min(1, this.state.hint)
+    }, this.checkSolution)
+  }
+
+  autohint() {
+    if (this.state.autohintOn) {
+      if (this.state.hint === 3) {
+        this.answered(this.nextUnsolvedRoot())
+      } else {
+        setTimeout(() => {
+          this.incrementHint();
+          this.autohint();
+        }, 2000);
+      }
+    }
   }
 
   /**
@@ -54,14 +72,15 @@ export default class Game extends React.Component {
     if (this.state.solvedRoots.length === this.state.wordRoots.length) {
       this.fillInRemaining()
       this.setState({ progress: this.state.progress + 1 })
-      setTimeout(() => this.props.nextQuestion(), 500);
+      setTimeout(() => this.props.nextQuestion(this.state.autohintOn), 500);
     } else {
-      this.setState({ choices: this.randomChoices(this.state.answerParts, this.state.allRoots) })
+      this.setState({choices: this.randomChoices(this.state.answerParts, this.state.allRoots) }, this.autohint)
     }
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
+      autohintOn: nextProps.autohintOn,
       answerParts: nextProps.question.components,
       choices: this.randomChoices(nextProps.question.components, nextProps.roots),
       hint: 0,
@@ -69,7 +88,7 @@ export default class Game extends React.Component {
       allRoots: nextProps.roots,
       wordRoots: _.filter(nextProps.question.components, (a) => a.type === 'root'),
       solvedRoots: []
-    });
+    }, this.autohint);
   }
 
   /**
@@ -83,8 +102,17 @@ export default class Game extends React.Component {
     this.setState({ answerParts: updatedAnswerParts });
   }
 
-  hint() {
-    this.setState({ hint: this.state.hint + 1 });
+  incrementHint() {
+    const hint = Math.min(this.state.hint + 1, this.state.autohintOn ? 3 : 2)
+    this.setState({ hint: hint });
+  }
+
+  nextUnsolvedRoot() {
+    return _.find(_.pluck(this.state.wordRoots, 'valueSolved'), (w) => !_.contains(this.state.solvedRoots, w));
+  }
+
+  toggleAutohint() {
+    this.setState({ autohintOn: !this.state.autohintOn }, this.autohint);
   }
 
   /**
@@ -105,8 +133,7 @@ export default class Game extends React.Component {
     });
 
     const choiceButtons = this.state.choices.map((choice, i) => {
-      const nextUnsolvedRoot = _.find(_.pluck(this.state.wordRoots, 'valueSolved'), (w) => !_.contains(this.state.solvedRoots, w));
-      const displayHint = (this.state.hint === 2) && nextUnsolvedRoot && (choice.value === nextUnsolvedRoot);
+      const displayHint = (this.state.hint === 2) && this.nextUnsolvedRoot() && (choice.value === this.nextUnsolvedRoot());
       return (
         <ChoiceButton
           answered={(root) => this.answered(root)}
@@ -135,7 +162,12 @@ export default class Game extends React.Component {
         <ChoiceButtonsContainer>
           {choiceButtonsRows}
         </ChoiceButtonsContainer>
-        <BottomBar hint={() => this.hint()}/>
+        <BottomBar
+          autohintOn={this.state.autohintOn}
+          toggleAutohint={() => this.toggleAutohint() }
+          hintDisabled={this.state.autohintOn || this.state.hint === 2} 
+          hint={() => this.incrementHint()}
+        />
       </Container>
     );
   };
