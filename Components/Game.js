@@ -25,7 +25,8 @@ export default class Game extends React.Component {
       wordRoots: [],
       choices: [],
       roots: [],
-      progress: 5,
+      progress: 1,
+      totalWords: 5,
       solvedRoots: []
     };
   }
@@ -45,6 +46,7 @@ export default class Game extends React.Component {
   checkSolution() {
     if (this.state.solvedRoots.length === _.filter(this.state.answerParts, (a) => a.type === 'root').length) {
       this.fillInRemaining()
+      this.setState({ progress: this.state.progress + 1 })
       setTimeout(() => this.props.nextQuestion(), 1000);
     } else {
       this.setState({ choices: this.randomChoices(this.state.answerParts, this.state.roots) })
@@ -102,7 +104,7 @@ export default class Game extends React.Component {
 
     return (
       <Container>
-        <ProgressBar progress={this.state.progress} />
+        <ProgressBar progress={this.state.progress} totalWords={this.state.totalWords} />
           <Prompt>{this.state.prompt}</Prompt>
           <AnswerPartsContainer>
             {answerParts}
