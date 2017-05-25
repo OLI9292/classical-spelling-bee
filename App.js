@@ -19,13 +19,12 @@ export default class App extends React.Component {
     this.importGameData();
   }
 
-
   importGameData = async () => {
     try {
       this.state.questionLists = await GameDataManager.import('questionLists');
       this.state.roots = await GameDataManager.import('roots');
       this.state.words = await GameDataManager.import('words');
-      this.nextQuestion();
+      this.nextQuestion(1, 1, 1);
     } catch(error) {
       console.log('App.js -> data not found');
     }
@@ -37,21 +36,20 @@ export default class App extends React.Component {
         if (this.state.moduleId === 10) {
           // TODO: game over
         } else {
-          this.setState({ moduleId: 1, submoduleId: 1, questionId: this.state.moduleId++ }, this.nextQuestion())
+          this.nextQuestion(this.state.moduleId + 1, 1, 1)
         }
       } else {
-        this.setState({ submoduleId: this.state.submoduleId++, questionId: 1 }, this.nextQuestion())
+        this.nextQuestion(this.state.moduleId, this.state.submoduleId + 1, 1)
       }
     } else {
-      this.setState({ questionId: this.state.questionId++ }, this.nextQuestion())
+      this.nextQuestion(this.state.moduleId, this.state.submoduleId, this.state.questionId + 1)
     }
   }
 
-  nextQuestion() {
-    const question = this.state.words[
-      this.state.questionLists[`module_${this.state.moduleId}`][`submodule_${this.state.submoduleId}`][`question_${this.state.questionId}`]
-    ];
-    this.setState({ question: question });
+  nextQuestion(moduleId, submoduleId, questionId) {
+    let question = this.state.words[this.state.questionLists[`module_${moduleId}`][`submodule_${submoduleId}`][`question_${questionId}`]];
+    question.components.forEach((c) => { c.valueUnsolved = Array(c.valueSolved.length).join('_')});
+    this.setState({ question: question, moduleId: moduleId, submoduleId: submoduleId, questionId: questionId });
   }
 
   render() {

@@ -5,9 +5,10 @@ import _ from 'underscore';
 import '../Library/helpers';
 
 import AnswerPart from './AnswerPart';
+import BottomBar from './BottomBar';
 import ChoiceButton from './ChoiceButton';
 import ProgressBar from './ProgressBar';
-import BottomBar from './BottomBar';
+import Prompt from './Prompt';
 
 import FirebaseManager from '../Networking/FirebaseManager';
 import WordParsingService from '../Services/WordParsingService';
@@ -20,13 +21,14 @@ export default class Game extends React.Component {
     super(props);
 
     this.state = {
+      hint: 0,
       answerParts: [],
       choiceCount: 6,
-      wordRoots: [],
       choices: [],
       roots: [],
       progress: 5,
-      solvedRoots: []
+      solvedRoots: [],
+      rootsCount: 0
     };
   }
 
@@ -43,19 +45,24 @@ export default class Game extends React.Component {
   }
 
   checkSolution() {
-    if (this.state.solvedRoots.length === _.filter(this.state.answerParts, (a) => a.type === 'root').length) {
+    if (this.state.solvedRoots.length === this.state.rootsCount) {
       this.fillInRemaining()
-      setTimeout(() => this.props.nextQuestion(), 1000);
+      setTimeout(() => this.props.nextQuestion(), 500);
     } else {
       this.setState({ choices: this.randomChoices(this.state.answerParts, this.state.roots) })
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ answerParts: nextProps.question.components });
-    this.setState({ prompt: nextProps.question.definition });
-    this.setState({ roots: nextProps.roots });
-    this.setState({ choices: this.randomChoices(nextProps.question.components, nextProps.roots) });
+    this.setState({
+      answerParts: nextProps.question.components,
+      choices: this.randomChoices(nextProps.question.components, nextProps.roots),
+      hint: 0,
+      prompt: nextProps.question.definition,
+      roots: nextProps.roots,
+      rootsCount: _.filter(nextProps.question.components, (a) => a.type === 'root').length,
+      solvedRoots: []
+    });
   }
 
   fillInRemaining() {
@@ -63,8 +70,11 @@ export default class Game extends React.Component {
       part.valueUnsolved = part.valueSolved;
       return part;
     });
-
     this.setState({ answerParts: updatedAnswerParts });
+  }
+
+  hint() {
+    this.setState({ hint: this.state.hint + 1 });
   }
 
   /**
@@ -73,7 +83,7 @@ export default class Game extends React.Component {
   randomChoices(wordParts, roots) {
     let wordRoots = _.filter(wordParts, (c) => c.type === 'root' && c.valueUnsolved.includes('_'))
     wordRoots = _.map(wordRoots, (root) => ({ 'value': root.valueSolved, 'definition': root.definition, 'isAnswer': 'true' }));
-    let choices = _.nRandom(_.toArray(roots), this.state.choiceCount)
+    let choices = _.nRandom(_.toArray(roots), this.state.choiceCount * 2);
     choices = _.reject(choices, (root) => _.contains(_.pluck(wordRoots, 'value').concat(this.state.solvedRoots), root.value));
     choices = choices.slice(0, this.state.choiceCount - wordRoots.length).concat(wordRoots);
     return _.shuffle(choices)
@@ -100,22 +110,23 @@ export default class Game extends React.Component {
       return (<ChoiceButtonsRow key={i} >{buttons}</ChoiceButtonsRow>)
     });
 
+    const rootDefinitions = _.pluck(_.filter(this.state.answerParts, (a) => a.type === 'root'), 'definition')
+
     return (
       <Container>
         <ProgressBar progress={this.state.progress} />
-          <Prompt>{this.state.prompt}</Prompt>
+          <Prompt text={this.state.prompt} hint={this.state.hint} definitions={rootDefinitions}/>
           <AnswerPartsContainer>
             {answerParts}
           </AnswerPartsContainer>
         <ChoiceButtonsContainer>
           {choiceButtonsRows}
         </ChoiceButtonsContainer>
-        <BottomBar />
+        <BottomBar hint={() => this.hint()}/>
       </Container>
     );
   };
 }
-
 
 const Container = styled.View`
   alignSelf: center;
@@ -125,13 +136,6 @@ const Container = styled.View`
   height: ${height * 0.95};
 `
 
-const Prompt = styled.Text`
-  fontSize: 32;
-  fontFamily: Avenir-Medium;
-  textAlign: center;
-  marginTop: ${height * 0.03};
-
-`
 const AnswerPartsContainer = styled.View`
   alignItems: center;
   flexDirection: row;

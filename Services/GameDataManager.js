@@ -13,13 +13,12 @@ const GameDataManager = {
   import: async (type) => {
     let data = await asyncStorage(type);
     if (data === null) {
-      switch(type) {
-        case 'questionLists':
-          await fetchQuestionLists();
-        case 'roots':
-          await fetchRoots();
-        case 'words':
-          await fetchWords();
+      if (type === 'questionLists') {
+        await fetchQuestionLists();
+      } else if (type === 'roots') {
+        await fetchRoots();
+      } else if (type === 'words') {
+        await fetchWords();
       }
       data = await asyncStorage(type);
     }
