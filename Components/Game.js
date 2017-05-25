@@ -53,7 +53,7 @@ export default class Game extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({ answerParts: nextProps.question.components });
-    this.setState({ prompt: nextProps.question.value });
+    this.setState({ prompt: nextProps.question.definition });
     this.setState({ roots: nextProps.roots });
     this.setState({ choices: this.randomChoices(nextProps.question.components, nextProps.roots) });
   }
@@ -103,12 +103,10 @@ export default class Game extends React.Component {
     return (
       <Container>
         <ProgressBar progress={this.state.progress} />
-        <PromptContainer>
-          <Prompt>Spell the word that means {this.state.prompt}</Prompt>
+          <Prompt>{this.state.prompt}</Prompt>
           <AnswerPartsContainer>
             {answerParts}
           </AnswerPartsContainer>
-        </PromptContainer>
         <ChoiceButtonsContainer>
           {choiceButtonsRows}
         </ChoiceButtonsContainer>
@@ -125,21 +123,12 @@ const Container = styled.View`
   marginBottom: ${height * 0.03};
   width: ${width * 0.9};
   height: ${height * 0.95};
-  flex: 1;
-  flexDirection: column;
-`
-
-const PromptContainer = styled.View`
-  flex: .75;
-  alignItems: center;
 `
 
 const Prompt = styled.Text`
-  alignItems: center;
-  fontSize: 36;
-  fontFamily: Avenir;
+  fontSize: 32;
+  fontFamily: Avenir-Medium;
   textAlign: center;
-  width: ${width * 0.8};
   marginTop: ${height * 0.03};
 
 `
@@ -147,15 +136,18 @@ const AnswerPartsContainer = styled.View`
   alignItems: center;
   flexDirection: row;
   justifyContent: center;
-  marginTop: ${height * 0.05};
+  marginBottom: ${height * 0.05};
 `
 const ChoiceButtonsContainer = styled.View`
   flex: 1;
+  justifyContent: flex-end;
   flexDirection: column;
   alignItems: center;
+  marginBottom: ${height * 0.03};
 `
 const ChoiceButtonsRow = styled.View`
-  flex: 1;
+  marginBottom: ${height * 0.02};
   flexDirection: row;
+  flex: 1;
   alignItems: center;
 `

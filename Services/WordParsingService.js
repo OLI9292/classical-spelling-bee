@@ -1,17 +1,17 @@
 import _ from 'underscore';
 
-/** Convert a FireBase word into a UI-compatable object 
+/** Convert a FireBase word into a UI-compatable object
 /*
 /*  Example input:
 /*    temporal
 /*      definition: @making@3 one @sleepy@1
 /*      part_of_speech: adjective
 /*      separated: somn.i#.fac.ient
-/*  
+/*
 /*  Example output:
 /*    "value": "somnifacient",
 /*    "components": [
-/*      {"valueSolved": "somn", "valueUnsolved": "____", "type": "root", "definition": "sleepy"}, 
+/*      {"valueSolved": "somn", "valueUnsolved": "____", "type": "root", "definition": "sleepy"},
 /*      {"valueSolved": "i", "valueUnsolved": "_", "type": "separator"},
 /*      {"valueSolved": "fac", "valueUnsolved": "___", "type": "root", "definition": "making"},
 /*      {"valueSolved": "ient", "valueUnsolved": "____", "type": "unknown"}
@@ -29,7 +29,7 @@ const WordParsingService = (firebaseWord) => {
   }
   components = parseDefinition(components, definition);
   definition = cleanDefinition(definition);
-  value = _.pluck(components, 'valueSolved').join('');
+  value = _.pluck(components, 'valueSolved').join('_');
   if (!definition || !value) {
     console.log(`Word.js -> missing data for ${definition ? definition : value}`)
     return null;
@@ -60,7 +60,7 @@ const parseComponents = (separated) => {
       } else {
         const type = char === '#' ? 'separator' : 'unknown';
         valueUnderscores = Array(componentString.length).join('_');
-        const component = { 
+        const component = {
           type: type,
           valueSolved: componentString,
           valueUnsolved: valueUnderscores

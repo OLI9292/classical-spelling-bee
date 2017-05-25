@@ -24,8 +24,8 @@ const Choice = styled.Text`
   borderWidth: 5;
   borderColor: #C4C4C4;
   color: black  ;
-  height: ${width * 0.2};
-  lineHeight: ${width * 0.2};
+  height: ${width * 0.15};
+  lineHeight: ${width * 0.15};
   textAlign: center;
   fontSize: 20;
   width: ${width * 0.4};
