@@ -8,7 +8,7 @@ const height = Dimensions.get('window').height;
 export default class Prompt extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = { boldAndUppercaseRoots: false }
   }
 
@@ -35,6 +35,8 @@ const PromptText = styled.Text`
   fontSize: 32;
   fontWeight: ${props => props.isRoot ? 'bold' : 'normal'};
   fontFamily: Avenir-Medium;
+  textAlignVertical: center;
   textAlign: center;
+  minHeight: ${height * 0.2};
   marginTop: ${height * 0.03};
 `

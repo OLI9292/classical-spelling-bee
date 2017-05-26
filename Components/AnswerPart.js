@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default class AnswerPart extends React.Component {
-
   render() {
     const whiteSpace = this.props.value.replace(new RegExp(/[_]/, 'g'), '\xa0\xa0');
 
@@ -21,7 +20,7 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   container: {
-    fontFamily: 'Avenir',
+    fontFamily: 'Avenir-Black',
     color: 'black',
     fontSize: 32,
   }
