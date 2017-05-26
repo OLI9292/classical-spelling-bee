@@ -8,7 +8,6 @@ import { AsyncStorage } from 'react-native';
 /*  First try to read data from storage
 /*  If data doesn't exist: fetch from Firebase -> save in storage -> try again
 **/
-
 const GameDataManager = {
   import: async (type) => {
     let data = await asyncStorage(type);
@@ -30,7 +29,9 @@ const GameDataManager = {
 /*  Firebase Queries
 **/
 const fetchQuestionLists = async function () {
-  FirebaseManager.questionLists.on('value', (snapshot) => save('questionLists', snapshot.val()));
+  FirebaseManager.questionLists.on('value', (snapshot) => {
+    save('questionLists', WordLists(snapshot));
+  });
 };
 
 const fetchRoots = async function () {

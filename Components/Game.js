@@ -70,6 +70,7 @@ export default class Game extends React.Component {
   **/
   checkSolution() {
     if (this.state.solvedRoots.length === this.state.wordRoots.length) {
+      console.log(this.state.solvedRoots.length === this.state.wordRoots.length);
       this.fillInRemaining()
       this.setState({ progress: this.state.progress + 1 })
       setTimeout(() => this.props.nextQuestion(this.state.autohintOn), 500);
@@ -82,10 +83,10 @@ export default class Game extends React.Component {
     this.setState({
       autohintOn: nextProps.autohintOn,
       answerParts: nextProps.question.components,
-      choices: this.randomChoices(nextProps.question.components, nextProps.roots),
+      choices: this.randomChoices(nextProps.question.components, nextProps.allRoots),
       hint: 0,
       prompt: nextProps.question.definition,
-      allRoots: nextProps.roots,
+      allRoots: nextProps.allRoots,
       wordRoots: _.filter(nextProps.question.components, (a) => a.type === 'root'),
       solvedRoots: []
     }, this.autohint);
