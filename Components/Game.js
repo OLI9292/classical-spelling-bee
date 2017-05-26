@@ -69,7 +69,7 @@ export default class Game extends React.Component {
   checkSolution() {
     if (this.state.solvedRoots.length === this.state.wordRoots.length) {
       this.fillInRemaining()
-      const newProgress = this.state.progress + 1;
+      const newProgress = this.state.progress++;
       this.setState({ progress: newProgress}, () => {
         this.checkLevelComplete()
       });
@@ -80,7 +80,7 @@ export default class Game extends React.Component {
   }
 
   checkLevelComplete() {
-    if (this.state.progress / this.state.totalWords === 1) {
+    if (this.state.progress === this.state.totalWords) {
       this.setState({ progress: 0, moduleId: this.state.moduleId + 1 })
     }
   }
