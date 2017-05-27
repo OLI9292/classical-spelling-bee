@@ -2,6 +2,6 @@
 
 Classical Spelling Bee is a vocabulary acquisition game based on Latin roots.
 
-The app is built using React Native and Firebase.  Services such as WordParsingService.js and QuestionListParsingService.js deconstruct data from Firebase to save as JSON in AsyncStorage.
+The app is built using React Native and Firebase. [GameDataManager](https://github.com/Classical-SB/classical-spelling-bee/blob/master/Services/GameDataManager.js), with help from a couple other [Services](https://github.com/Classical-SB/classical-spelling-bee/tree/master/Services) deconstructs data from Firebase to save as JSON in AsyncStorage.
 
-Game data is controlled in App.js, while the actual game dynamics are controlled in Game.js.
+Game state is controlled in [App](https://github.com/Classical-SB/classical-spelling-bee/blob/master/App.js), while dynamics are controlled in [Game](https://github.com/Classical-SB/classical-spelling-bee/blob/master/Components/Game.js).
