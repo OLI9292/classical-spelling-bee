@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   container: {
-    fontFamily: 'Avenir',
+    fontFamily: 'Avenir-Black',
     color: 'black',
     fontSize: 32,
   }

@@ -2,7 +2,7 @@ import React from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
 import _ from 'underscore';
-import '../Library/helpers';
+import '../Library/Helpers';
 
 import AnswerPart from './AnswerPart';
 import BottomBar from './BottomBar';
@@ -27,11 +27,8 @@ export default class Game extends React.Component {
       choiceCount: 6,
       choices: [],
       allRoots: [],
-      progress: 5,
       solvedRoots: [],
       wordRoots: [],
-      progress: 1,
-      totalWords: 5,
       solvedRoots: []
     };
   }
@@ -70,10 +67,8 @@ export default class Game extends React.Component {
   **/
   checkSolution() {
     if (this.state.solvedRoots.length === this.state.wordRoots.length) {
-      console.log(this.state.solvedRoots.length === this.state.wordRoots.length);
       this.fillInRemaining()
-      this.setState({ progress: this.state.progress + 1 })
-      setTimeout(() => this.props.nextQuestion(this.state.autohintOn), 500);
+      setTimeout(() => this.props.nextQuestion(this.state.autohintOn), 1500);
     } else {
       this.setState({choices: this.randomChoices(this.state.answerParts, this.state.allRoots) }, this.autohint)
     }
@@ -148,31 +143,48 @@ export default class Game extends React.Component {
     });
 
     const choiceButtonsRows = _.chunk(choiceButtons, 2).map((buttons, i) => {
-      return (<ChoiceButtonsRow key={i} >{buttons}</ChoiceButtonsRow>)
+      return (<ChoiceButtonsRow key={i}>{buttons}</ChoiceButtonsRow>)
     });
 
     const rootDefinitions = _.pluck(_.filter(this.state.answerParts, (a) => a.type === 'root'), 'definition')
 
     return (
       <Container>
-        <ProgressBar progress={this.state.progress} totalWords={this.state.totalWords} />
-          <Prompt text={this.state.prompt} hint={this.state.hint} definitions={rootDefinitions}/>
-          <AnswerPartsContainer>
-            {answerParts}
-          </AnswerPartsContainer>
+        <ProgressBar progress={this.props.current.question} total={this.props.counters.questionsCount} />
+        <Prompt text={this.state.prompt} hint={this.state.hint} definitions={rootDefinitions}/>
+        <AnswerPartsContainer>
+          {answerParts}
+        </AnswerPartsContainer>
         <ChoiceButtonsContainer>
           {choiceButtonsRows}
         </ChoiceButtonsContainer>
-        <BottomBar
-          autohintOn={this.state.autohintOn}
-          toggleAutohint={() => this.toggleAutohint() }
-          hintDisabled={this.state.autohintOn || this.state.hint === 2} 
-          hint={() => this.incrementHint()}
-        />
+        <BottomBarContainer>
+          <BottomBar
+            currentLevel={`${this.props.current.module}-${this.props.current.submodule}`}
+            autohintOn={this.state.autohintOn}
+            toggleAutohint={() => this.toggleAutohint() }
+            hintDisabled={this.state.autohintOn || this.state.hint === 2}
+            hint={() => this.incrementHint()}
+          />
+        </BottomBarContainer>
       </Container>
     );
   };
 }
+
+
+const AnswerPartsContainer = styled.View`
+  alignItems: center;
+  flexDirection: row;
+  justifyContent: center;
+  marginBottom: ${height * 0.05};
+  marginTop: ${height * 0.05};
+`
+
+const BottomBarContainer = styled.View`
+  marginTop: ${height * 0.05};
+  bottom: 0;
+`
 
 const Container = styled.View`
   alignSelf: center;
@@ -184,22 +196,15 @@ const Container = styled.View`
   justifyContent: flex-start;
 `
 
-const AnswerPartsContainer = styled.View`
-  alignItems: center;
-  flexDirection: row;
-  justifyContent: center;
-  marginBottom: ${height * 0.05};
-`
-
 const ChoiceButtonsContainer = styled.View`
   flex: 1;
   alignItems: center;
   marginBottom: ${height * 0.03};
+  maxHeight: ${height * 0.4};
 `
 
 const ChoiceButtonsRow = styled.View`
   flex: 0.5;
   flexDirection: row;
   marginBottom: ${height * 0.02};
-
 `

@@ -36,5 +36,7 @@ const PromptText = styled.Text`
   fontWeight: ${props => props.isRoot ? 'bold' : 'normal'};
   fontFamily: Avenir-Medium;
   textAlign: center;
+  textAlignVertical: center;
+  minHeight: ${height * 0.2};
   marginTop: ${height * 0.03};
 `
