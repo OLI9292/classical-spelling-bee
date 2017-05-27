@@ -35,16 +35,6 @@ const AutoHint = styled.Image`
   alignSelf: flex-start;
 `
 
-const Level = styled.Text`
-  fontSize: 28;
-  fontFamily: Avenir-Medium;
-  textAlign: center;
-  color: #C4C4C4;
-  marginTop: ${width * 0.02};
-  flex: 1;
-  alignSelf: center;
-
-
 `
 const Container = styled.View`
   flexDirection: row;
@@ -55,5 +45,14 @@ const Hint = styled.Image`
   opacity: ${props => props.disabled ? 0.3 : 1};
   width: ${width * 0.12};
   alignSelf: flex-end;
+`
 
+const Level = styled.Text`
+  fontSize: 28;
+  fontFamily: Avenir-Medium;
+  textAlign: center;
+  color: #C4C4C4;
+  marginTop: ${width * 0.02};
+  flex: 1;
+  alignSelf: center;
 `

@@ -10,7 +10,8 @@ const firebaseConfig = {
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 const FirebaseManager = {
-  questionLists: firebaseApp.database().ref().child('mobile').child('question_lists'),
+  connected: firebaseApp.database().ref('.info/connected'),
+  questionList: firebaseApp.database().ref().child('mobile').child('question_lists'),
   words: firebaseApp.database().ref().child('mobile').child('words'),
   roots: firebaseApp.database().ref().child('mobile').child('roots')
 }

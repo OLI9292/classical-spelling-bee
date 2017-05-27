@@ -2,7 +2,7 @@ import React from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
 import _ from 'underscore';
-import '../Library/helpers';
+import '../Library/Helpers';
 
 import AnswerPart from './AnswerPart';
 import BottomBar from './BottomBar';
@@ -28,9 +28,7 @@ export default class Game extends React.Component {
       allRoots: [],
       solvedRoots: [],
       wordRoots: [],
-      progress: 0,
-      totalWords: 10,
-      moduleId: 1
+      solvedRoots: []
     };
   }
 
@@ -69,10 +67,6 @@ export default class Game extends React.Component {
   checkSolution() {
     if (this.state.solvedRoots.length === this.state.wordRoots.length) {
       this.fillInRemaining()
-      const newProgress = this.state.progress++;
-      this.setState({ progress: newProgress}, () => {
-        this.checkLevelComplete()
-      });
       setTimeout(() => this.props.nextQuestion(this.state.autohintOn), 1500);
     } else {
       this.setState({choices: this.randomChoices(this.state.answerParts, this.state.allRoots) }, this.autohint)
@@ -89,10 +83,10 @@ export default class Game extends React.Component {
     this.setState({
       autohintOn: nextProps.autohintOn,
       answerParts: nextProps.question.components,
-      choices: this.randomChoices(nextProps.question.components, nextProps.roots),
+      choices: this.randomChoices(nextProps.question.components, nextProps.allRoots),
       hint: 0,
       prompt: nextProps.question.definition,
-      allRoots: nextProps.roots,
+      allRoots: nextProps.allRoots,
       wordRoots: _.filter(nextProps.question.components, (a) => a.type === 'root'),
       solvedRoots: []
     }, this.autohint);
@@ -154,24 +148,24 @@ export default class Game extends React.Component {
     });
 
     const choiceButtonsRows = _.chunk(choiceButtons, 2).map((buttons, i) => {
-      return (<ChoiceButtonsRow key={i} >{buttons}</ChoiceButtonsRow>)
+      return (<ChoiceButtonsRow key={i}>{buttons}</ChoiceButtonsRow>)
     });
 
     const rootDefinitions = _.pluck(_.filter(this.state.answerParts, (a) => a.type === 'root'), 'definition')
 
     return (
       <Container>
-        <ProgressBar progress={this.state.progress} totalWords={this.state.totalWords} />
-          <Prompt text={this.state.prompt} hint={this.state.hint} definitions={rootDefinitions}/>
-          <AnswerPartsContainer>
-            {answerParts}
-          </AnswerPartsContainer>
+        <ProgressBar progress={this.props.current.question} total={this.props.counters.questionsCount} />
+        <Prompt text={this.state.prompt} hint={this.state.hint} definitions={rootDefinitions}/>
+        <AnswerPartsContainer>
+          {answerParts}
+        </AnswerPartsContainer>
         <ChoiceButtonsContainer>
           {choiceButtonsRows}
         </ChoiceButtonsContainer>
         <BottomBarContainer>
           <BottomBar
-            currentLevel={this.state.moduleId}
+            currentLevel={`${this.props.current.module}-${this.props.current.submodule}`}
             autohintOn={this.state.autohintOn}
             toggleAutohint={() => this.toggleAutohint() }
             hintDisabled={this.state.autohintOn || this.state.hint === 2}
@@ -183,15 +177,6 @@ export default class Game extends React.Component {
   };
 }
 
-const Container = styled.View`
-  alignSelf: center;
-  marginTop: ${height * 0.03};
-  marginBottom: ${height * 0.03};
-  width: ${width * 0.9};
-  height: ${height * 0.95};
-  flex: 1;
-  justifyContent: flex-start;
-`
 
 const AnswerPartsContainer = styled.View`
   alignItems: center;
@@ -206,17 +191,25 @@ const BottomBarContainer = styled.View`
   bottom: 0;
 `
 
+const Container = styled.View`
+  alignSelf: center;
+  marginTop: ${height * 0.03};
+  marginBottom: ${height * 0.03};
+  width: ${width * 0.9};
+  height: ${height * 0.95};
+  flex: 1;
+  justifyContent: flex-start;
+`
+
 const ChoiceButtonsContainer = styled.View`
   flex: 1;
   alignItems: center;
   marginBottom: ${height * 0.03};
   maxHeight: ${height * 0.4};
-
 `
 
 const ChoiceButtonsRow = styled.View`
   flex: 0.5;
   flexDirection: row;
   marginBottom: ${height * 0.02};
-
 `
