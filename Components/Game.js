@@ -19,7 +19,6 @@ const width = Dimensions.get('window').width;
 export default class Game extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       autohintOn: false,
       hint: 0,
@@ -42,7 +41,7 @@ export default class Game extends React.Component {
       return part;
     });
     const solvedRoots = this.state.solvedRoots.concat([root.toLowerCase()]);
-    this.setState({ 
+    this.setState({
       answerParts: updatedAnswerParts,
       solvedRoots: solvedRoots,
       hint: Math.min(1, this.state.hint)
@@ -63,7 +62,7 @@ export default class Game extends React.Component {
   }
 
   /**
-  /*  Check if all roots have been solved, fill in remaining components, and advance to next question 
+  /*  Check if all roots have been solved, fill in remaining components, and advance to next question
   **/
   checkSolution() {
     if (this.state.solvedRoots.length === this.state.wordRoots.length) {
@@ -71,6 +70,12 @@ export default class Game extends React.Component {
       setTimeout(() => this.props.nextQuestion(this.state.autohintOn), 1500);
     } else {
       this.setState({choices: this.randomChoices(this.state.answerParts, this.state.allRoots) }, this.autohint)
+    }
+  }
+
+  checkLevelComplete() {
+    if (this.state.progress === this.state.totalWords) {
+      this.setState({ progress: 0, moduleId: this.state.moduleId + 1 })
     }
   }
 
