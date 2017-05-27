@@ -37,6 +37,6 @@ const PromptText = styled.Text`
   fontFamily: Avenir-Medium;
   textAlignVertical: center;
   textAlign: center;
-  minHeight: ${height * 0.2};
-  marginTop: ${height * 0.03};
+  height: ${height * 0.25};
+  marginTop: ${height * 0.05};
 `

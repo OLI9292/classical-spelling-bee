@@ -36,20 +36,19 @@ export default class Game extends React.Component {
   /*  Replace underscores with answer and reset choices
   **/
   answered(root) {
-    const updatedAnswerParts = _.map(this.state.answerParts, (part) => {
-      if (part.valueSolved === root.toLowerCase()) { part.valueUnsolved = part.valueSolved }
-      return part;
-    });
+    console.log(root);
+    if (root === undefined) { return };
+    const updatedAnswerParts = this.fillIn(root);
     const solvedRoots = this.state.solvedRoots.concat([root.toLowerCase()]);
     this.setState({
       answerParts: updatedAnswerParts,
-      solvedRoots: solvedRoots,
-      hint: Math.min(1, this.state.hint)
+      hint: Math.min(1, this.state.hint),
+      solvedRoots: solvedRoots
     }, this.checkSolution)
   }
 
   autohint() {
-    const speed = (parseInt(this.props.config.autohinting_speed) * 1000) || 2000;
+    const speed = (parseInt(this.props.config.autohinting_speed) * 5000) || 2000;
     if (this.state.autohintOn) {
       if (this.state.hint === 3) {
         this.answered(this.nextUnsolvedRoot())
@@ -67,16 +66,11 @@ export default class Game extends React.Component {
   **/
   checkSolution() {
     if (this.state.solvedRoots.length === this.state.wordRoots.length) {
-      this.fillInRemaining()
+      const solution = this.fillIn(null, true)
+      this.setState({ answerParts: solution });
       setTimeout(() => this.props.nextQuestion(this.state.autohintOn), 1500);
     } else {
       this.setState({choices: this.randomChoices(this.state.answerParts, this.state.allRoots) }, this.autohint)
-    }
-  }
-
-  checkLevelComplete() {
-    if (this.state.progress === this.state.totalWords) {
-      this.setState({ progress: 0, moduleId: this.state.moduleId + 1 })
     }
   }
 
@@ -96,12 +90,11 @@ export default class Game extends React.Component {
   /**
   /*  Fill in non-root components
   **/
-  fillInRemaining() {
-    const updatedAnswerParts = _.map(this.state.answerParts, (part) => {
-      part.valueUnsolved = part.valueSolved;
+  fillIn(root, solveAll) {
+    return _.map(this.state.answerParts, (part) => {
+      if (solveAll || part.valueSolved === root.toLowerCase()) { part.valueUnsolved = part.valueSolved };
       return part;
     });
-    this.setState({ answerParts: updatedAnswerParts });
   }
 
   incrementHint() {
@@ -178,13 +171,12 @@ export default class Game extends React.Component {
   };
 }
 
-
 const AnswerPartsContainer = styled.View`
   alignItems: center;
   flexDirection: row;
   justifyContent: center;
-  marginBottom: ${height * 0.05};
-  marginTop: ${height * 0.05};
+  marginBottom: ${height * 0.025};
+  marginTop: ${height * 0.025};
 `
 
 const BottomBarContainer = styled.View`
@@ -205,8 +197,7 @@ const Container = styled.View`
 const ChoiceButtonsContainer = styled.View`
   flex: 1;
   alignItems: center;
-  marginBottom: ${height * 0.03};
-  maxHeight: ${height * 0.4};
+  height: ${height * 0.4};
 `
 
 const ChoiceButtonsRow = styled.View`
