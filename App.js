@@ -14,14 +14,10 @@ export default class App extends React.Component {
       allRoots: [],
       autohintOn: false,
       config: {},
-      counters: {},
+      counters: { modulesCount: 10, submodulesCount: 10, questionsCount: 10 },
       current: { module: 1, submodule: 1, question: 1 },
       question: {},
-      questionsCount: 0,
-      questionId: 1,
       questionList: [],
-      moduleId: 1,
-      submoduleId: 1,
       words: []
     };
 
@@ -41,32 +37,24 @@ export default class App extends React.Component {
   }
 
   incrementCounterIds(autohintOn) {
-    if (this.state.questionId === this.state.counters.questionsCount) { // end of submodule
-      if (this.state.submoduleId === this.state.counters.submodulesCount) { // end of module
-        if (this.state.moduleId === this.state.counters.modulesCount) { // end of game
+    if (this.state.current.question === this.state.counters.questionsCount) { // end of submodule
+      if (this.state.currentsubmodule === this.state.counters.submodulesCount) { // end of module
+        if (this.state.currentmodule === this.state.counters.modulesCount) { // end of game
         } else { // next module
           this.showQuestion(this.state.current.module + 1, 1, 1, autohintOn)
         }
       } else { // next submodule
-        this.showQuestion(this.state.moduleId, this.state.current.submodule + 1, 1, autohintOn)
+        this.showQuestion(this.state.current.module, this.state.current.submodule + 1, 1, autohintOn)
       }
     } else { // next question in submodule
-      this.showQuestion(this.state.moduleId, this.state.submoduleId, this.state.current.question + 1, autohintOn)
+      this.showQuestion(this.state.current.module, this.state.current.submodule, this.state.current.question + 1, autohintOn)
     }
   }
 
   showQuestion(moduleId, submoduleId, questionId, autohintOn) {
     const current = { module: moduleId, submodule: submoduleId, question: questionId };
     let question = QuestionListParsingService.questionFor(current, this.state.questionList, this.state.words);
-    this.setState({
-      autohintOn: autohintOn,
-      current: current,
-      question: question.value,
-      moduleId: moduleId,
-      submoduleId: submoduleId,
-      questionId: questionId,
-      counters: question.counters
-    });
+    this.setState({ autohintOn: autohintOn, counters: question.counters, current: current, question: question.value });
   }
 
   render() {

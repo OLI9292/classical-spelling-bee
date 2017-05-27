@@ -1,38 +1,62 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import { TouchableOpacity, Dimensions} from 'react-native';
+import { Dimensions, TouchableHighlight, Vibration } from 'react-native';
 
+const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
 
 export default class ChoiceButton extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = { highlight: false }
+  }
+
+  answered(word) {
+    if (this.props.isAnswer) {
+      this.setState({ highlight: true }, this.nextQuestion(word));
+    } else {
+      Vibration.vibrate();
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({ highlight: false });
+  }
+
+  nextQuestion(word) {
+    setTimeout(() => { this.props.answered(word) }, 200);
   }
 
   render() {
-    const word = this.props.word.toUpperCase();
-    const choice = this.props.displayHint ? <Choice displayHint>{word}</Choice> : <Choice>{word}</Choice>;
+    touchableStyle = () => {
+       return {
+          height: height * 0.09,
+          backgroundColor: this.state.highlight ? '#FADC3D' : '#F8EDD2',
+          borderColor: this.props.displayHint ? '#FADC3D' : '#C4C4C4',
+          borderRadius: 10,
+          borderWidth: 5,
+          margin: width * 0.05,
+          overflow: 'hidden',
+          width: width * 0.4
+       }
+     }
 
     return (
-      <TouchableOpacity onPress={() => this.props.isAnswer && this.props.answered(word)}>
-        {choice}
-      </TouchableOpacity>
+      <TouchableHighlight
+        style={touchableStyle()} 
+        onPress={() => this.answered(this.props.word)}
+        underlayColor='#F8EDD2'
+      >
+        <Choice>{this.props.word.toUpperCase()}</Choice>
+      </TouchableHighlight>
     );
   }
 }
 
 const Choice = styled.Text`
-  borderRadius: 10;
   fontFamily: Avenir;
-  borderWidth: 5;
-  borderColor: #C4C4C4;
-  borderColor: ${props => props.displayHint ? '#FADC3D' : '#C4C4C4'};
-  color: black;
-  height: ${width * 0.15};
-  lineHeight: ${width * 0.15};
   textAlign: center;
+  lineHeight: ${height * 0.08};
   fontSize: 20;
-  width: ${width * 0.4};
-  margin: ${width * 0.05};
-  overflow: hidden;
 `
