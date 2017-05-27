@@ -75,7 +75,6 @@ const save = async (type, data) => {
   try {
     const current = await asyncStorage(type);
     if (!_.isEqual(current, data)) {
-      if (type === 'config') { console.log(data) } 
       const json = JSON.stringify(data);
       await AsyncStorage.setItem(type, json);
       console.log(`DataImportService.js -> saved ${Object.keys(data).length} ${type}`);
