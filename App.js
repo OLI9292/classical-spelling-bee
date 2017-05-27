@@ -55,7 +55,6 @@ export default class App extends React.Component {
 
   showQuestion(moduleId, submoduleId, questionId, autohintOn) {
     const current = { module: moduleId, submodule: submoduleId, question: questionId };
-    console.log(current);
     let question = QuestionListParsingService.question(current, this.state.questionList, this.state.words);
     // Replace previously answered words with underscores
     question.value.components.forEach((c) => { c.valueUnsolved = Array(c.valueSolved.length).join('_')});
