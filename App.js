@@ -13,6 +13,7 @@ export default class App extends React.Component {
     this.state = {
       allRoots: [],
       autohintOn: false,
+      config: {},
       counters: {},
       current: { module: 1, submodule: 1, question: 1 },
       question: {},
@@ -29,6 +30,7 @@ export default class App extends React.Component {
 
   importGameData = async () => {
     try {
+      this.state.config = await GameDataManager.import('config');
       this.state.questionList = await GameDataManager.import('questionList');
       this.state.allRoots = await GameDataManager.import('roots');
       this.state.words = await GameDataManager.import('words');
@@ -55,9 +57,7 @@ export default class App extends React.Component {
 
   showQuestion(moduleId, submoduleId, questionId, autohintOn) {
     const current = { module: moduleId, submodule: submoduleId, question: questionId };
-    let question = QuestionListParsingService.question(current, this.state.questionList, this.state.words);
-    // Replace previously answered words with underscores
-    question.value.components.forEach((c) => { c.valueUnsolved = Array(c.valueSolved.length).join('_')});
+    let question = QuestionListParsingService.questionFor(current, this.state.questionList, this.state.words);
     this.setState({
       autohintOn: autohintOn,
       current: current,
@@ -76,6 +76,7 @@ export default class App extends React.Component {
           allRoots={this.state.allRoots}
           autohintOn={this.state.autohintOn}
           counters={this.state.counters}
+          config={this.state.config}
           current={this.state.current}
           question={this.state.question}
           nextQuestion={(autohintOn) => this.incrementCounterIds(autohintOn)}

@@ -27,7 +27,9 @@ const GameDataManager = {
 /*  Queries
 **/
 const fetch = async function (type) {
-  if (type === 'questionList') {
+  if (type === 'config') {
+    return FirebaseManager.config.once('value').then(parseConfig);
+  } else if (type === 'questionList') {
     return FirebaseManager.questionList.once('value').then(parseQuestionList);
   } else if (type === 'roots') {
     return FirebaseManager.roots.once('value').then(parseRoots);
@@ -35,6 +37,10 @@ const fetch = async function (type) {
     return FirebaseManager.words.once('value').then(parseWords);
   }
 };
+
+function parseConfig(snapshot) {
+  return snapshot.val();
+}
 
 function parseQuestionList(snapshot) {
   return QuestionListParsingService.parse(snapshot);

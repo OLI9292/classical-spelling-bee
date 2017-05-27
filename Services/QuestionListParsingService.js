@@ -16,28 +16,34 @@ const QuestionListParsingService = {
     })
     return { modules_count: modules.length, modules: modules }
   },
-  question: (current, questionList, wordList) => {
+  questionFor: (current, questionList, wordList) => {
     const module = questionList.modules.filter((m) => m.module == current.module)[0];
-    const modulesCount = questionList.modules.length;
     let submodule = module.submodules.filter((s) => s.submodule == current.submodule)[0];
     submodule.questions = reviseQuestions(submodule.questions);
-    const submodulesCount = module.submodules_count;
     const questionWord = submodule.questions[current.question];
-    const question = wordList[questionWord];
-    const questionsCount = submodule.questions.length - 1;
-    const counters = { modulesCount: modulesCount, submodulesCount: submodulesCount, questionsCount: questionsCount };
-    if (question && counters) {
-      return { value: question, counters: counters };
+    let question = wordList[questionWord];
+    // Replace previously answered words with underscores
+    question.components.forEach((c) => { c.valueUnsolved = Array(c.valueSolved.length).join('_')});
+    if (question) {
+      return { value: question, counters: counters(questionList, module, submodule) };
     } else {
       console.log(`QuestionListParsingService.js -> question ${current.question} in module ${current.module}, submodule ${current.submodule} wasn't found`);
     }
   }
 }
 
+const counters = (questionList, module, submodule) => {
+  return {
+    modulesCount: questionList.modules.length,
+    submodulesCount: module.submodules_count,
+    questionsCount: submodule.questions.length - 1
+  }
+}
+
 /**
 /*  Shuffles questions and ensures any duplicates do not appear consecutively
 **/
-reviseQuestions = (questions) => {
+const reviseQuestions = (questions) => {
   const uniq = _.uniq(questions);
   let shuffled = _.shuffle(uniq);
   while (shuffled.length < 10) {
