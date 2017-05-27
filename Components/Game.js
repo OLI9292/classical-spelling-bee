@@ -49,6 +49,7 @@ export default class Game extends React.Component {
   }
 
   autohint() {
+    const speed = (parseInt(this.props.config.autohinting_speed) * 1000) || 2000;
     if (this.state.autohintOn) {
       if (this.state.hint === 3) {
         this.answered(this.nextUnsolvedRoot())
@@ -56,7 +57,7 @@ export default class Game extends React.Component {
         setTimeout(() => {
           this.incrementHint();
           this.autohint();
-        }, 2000);
+        }, speed);
       }
     }
   }
@@ -81,14 +82,14 @@ export default class Game extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      autohintOn: nextProps.autohintOn,
+      allRoots: nextProps.allRoots,
       answerParts: nextProps.question.components,
+      autohintOn: nextProps.autohintOn,
       choices: this.randomChoices(nextProps.question.components, nextProps.allRoots),
       hint: 0,
       prompt: nextProps.question.definition,
-      allRoots: nextProps.allRoots,
-      wordRoots: _.filter(nextProps.question.components, (a) => a.type === 'root'),
-      solvedRoots: []
+      solvedRoots: [],
+      wordRoots: _.filter(nextProps.question.components, (a) => a.type === 'root')
     }, this.autohint);
   }
 
