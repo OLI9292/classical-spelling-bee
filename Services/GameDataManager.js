@@ -43,7 +43,7 @@ function parseConfig(snapshot) {
 }
 
 function parseQuestionList(snapshot) {
-  return QuestionListParsingService.parse(snapshot);
+  return QuestionListParsingService.parse(snapshot.val());
 }
 
 function parseRoots(snapshot) {

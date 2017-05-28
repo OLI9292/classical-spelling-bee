@@ -2,18 +2,21 @@ import _ from 'underscore';
 import { mapObject } from 'underscore';
 
 const QuestionListParsingService = {
-  parse: (snapshot) => {
-    let modules = _.values(mapObject(snapshot.val(), (v, k) => ({ module: parseInt(_.last(k.split('_'))), submodules: v })));
+  parse: (data) => {
+    let modules = _.values(mapObject(data, (v, k) => ({ module: parseInt(_.last(k.split('_'))), submodules: v })));
     _.each(modules, (m) => {
-      const submodules = _.map(_.keys(m.submodules), (sub) => parseInt(_.last(sub.split('_'))));
+      let submodules = _.map(_.keys(m.submodules), (sub) => parseInt(_.last(sub.split('_'))));
       const questions = _.map(_.values(m.submodules), (sub) => _.values(sub));
-      m.submodules = _.map(_.zip(submodules, questions), (d) => ({ submodule: d[0], questions: d[1] }));
+      submodules = _.map(_.zip(submodules, questions), (d) => ({ submodule: d[0], questions: d[1] }));
+      submodules = submodules.sort((a,b) => a.submodule - b.submodule);
+      m.submodules = submodules;
     })
     modules.module_count = modules.length;
     _.each(modules, (m) => {
       m.submodules_count = m.submodules.length;
       _.each(m.submodules, (sub) => sub.questions_count = sub.questions.length);
     })
+    modules = modules.sort((a,b) => a.module - b.module);
     return { modules_count: modules.length, modules: modules }
   },
   questionFor: (current, questionList, wordList) => {
