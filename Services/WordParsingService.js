@@ -16,7 +16,11 @@ import _ from 'underscore';
 /*      {"valueSolved": "fac", "valueUnsolved": "___", "type": "root", "definition": "making"},
 /*      {"valueSolved": "ient", "valueUnsolved": "____", "type": "unknown"}
 /*    ],
-/*    "definition":"making one sleepy"
+/*    "definition": [
+/*      {"isRoot": true, "value": "making"},
+/*      {"isRoot": false, "value": "one"},
+/*      {"isRoot": true, "value": "sleepy"}
+/*    ]
 **/
 const WordParsingService = (firebaseWord) => {
   let components;
@@ -29,7 +33,7 @@ const WordParsingService = (firebaseWord) => {
   }
   components = parseDefinition(components, definition);
   definition = cleanDefinition(definition, components);
-  value = _.pluck(components, 'valueSolved').join('_');
+  value = _.pluck(components, 'valueSolved').join('');
   if (!definition || !value) {
     console.log(`Word.js -> missing data for ${definition ? definition : value}`)
     return null;
@@ -62,7 +66,7 @@ const parseComponents = (separated) => {
         throw { name : 'EmptyComponentString', message : `Word.js -> error parsing ${separated}` };
       } else {
         const type = char === '#' ? 'separator' : 'unknown';
-        valueUnderscores = Array(componentString.length).join('_');
+        valueUnderscores = Array(componentString.length + 1).join('_');
         const component = {
           type: type,
           valueSolved: componentString,

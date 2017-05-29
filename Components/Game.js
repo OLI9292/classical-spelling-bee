@@ -20,43 +20,46 @@ export default class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      autohintOn: false,
-      hint: 0,
+      allRoots: [],
       answerParts: [],
+      autohintOn: false,
+      autohintingPaused: false,
+      autohintingSpeed: parseInt(this.props.config.autohinting_speed * 1000) || 2000,
       choiceCount: 6,
       choices: [],
-      allRoots: [],
+      hint: 0,
       solvedRoots: [],
-      wordRoots: [],
-      solvedRoots: []
+      timer: null,
+      wordRoots: []
     };
   }
 
   /**
   /*  Replace underscores with answer and reset choices
   **/
-  answered(root) {
-    console.log(root);
-    if (root === undefined) { return };
-    const updatedAnswerParts = this.fillIn(root);
-    const solvedRoots = this.state.solvedRoots.concat([root.toLowerCase()]);
-    this.setState({
-      answerParts: updatedAnswerParts,
-      hint: Math.min(1, this.state.hint),
-      solvedRoots: solvedRoots
-    }, this.checkSolution)
+  answered(root, isUser = false) {
+    if (isUser || !this.state.autohintingPaused && (root !== undefined)) {
+      const updatedAnswerParts = this.fillIn(root);
+      const solvedRoots = this.state.solvedRoots.concat([root.toLowerCase()]);
+      this.setState({
+        answerParts: updatedAnswerParts,
+        autohintingPaused: this.state.autohintOn && isUser,
+        hint: Math.min(1, this.state.hint),
+        solvedRoots: solvedRoots
+      }, this.checkSolution);
+      this.pauseAutohinting(isUser);
+    }
   }
 
   autohint() {
-    const speed = (parseInt(this.props.config.autohinting_speed) * 5000) || 2000;
-    if (this.state.autohintOn) {
+    if (this.state.autohintOn && !this.state.autohintingPaused) {
       if (this.state.hint === 3) {
         this.answered(this.nextUnsolvedRoot())
       } else {
         setTimeout(() => {
           this.incrementHint();
           this.autohint();
-        }, speed);
+        }, this.state.autohintingSpeed);
       }
     }
   }
@@ -98,12 +101,20 @@ export default class Game extends React.Component {
   }
 
   incrementHint() {
-    const hint = Math.min(this.state.hint + 1, this.state.autohintOn ? 3 : 2)
-    this.setState({ hint: hint });
+    if (!this.state.autohintingPaused) {
+      const hint = Math.min(this.state.hint + 1, this.state.autohintOn ? 3 : 2)
+      this.setState({ hint: hint });
+    }
   }
 
   nextUnsolvedRoot() {
     return _.find(_.pluck(this.state.wordRoots, 'valueSolved'), (w) => !_.contains(this.state.solvedRoots, w));
+  }
+
+  pauseAutohinting(isUser) {
+    if (isUser && this.state.autohintingPaused) {
+      setTimeout(() => { this.setState({ autohintingPaused: false }, this.autohint)}, this.state.autohintingSpeed);
+    }
   }
 
   toggleAutohint() {
@@ -131,7 +142,7 @@ export default class Game extends React.Component {
       const displayHint = (this.state.hint === 2) && this.nextUnsolvedRoot() && (choice.value === this.nextUnsolvedRoot());
       return (
         <ChoiceButton
-          answered={(root) => this.answered(root)}
+          answered={(root) => this.answered(root, true)}
           definition={choice.definition}
           displayHint={displayHint}
           isAnswer={choice.isAnswer}

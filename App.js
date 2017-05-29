@@ -18,7 +18,7 @@ export default class App extends React.Component {
       current: { module: 1, submodule: 1, question: 1 },
       question: {},
       questionList: [],
-      words: []
+      words: {}
     };
 
     this.importGameData();
