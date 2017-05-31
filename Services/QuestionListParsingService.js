@@ -6,7 +6,7 @@ const QuestionListParsingService = {
     let modules = _.values(mapObject(data, (v, k) => ({ module: parseInt(_.last(k.split('_'))), submodules: v })));
     _.each(modules, (m) => {
       let submodules = _.map(_.keys(m.submodules), (sub) => parseInt(_.last(sub.split('_'))));
-      const questions = _.map(_.values(m.submodules), (sub) => _.values(sub));
+      let questions = _.map(_.values(m.submodules), (sub) => _.values(sub));
       submodules = _.map(_.zip(submodules, questions), (d) => ({ submodule: d[0], questions: d[1] }));
       submodules = submodules.sort((a,b) => a.submodule - b.submodule);
       m.submodules = submodules;
@@ -20,18 +20,26 @@ const QuestionListParsingService = {
     return { modules_count: modules.length, modules: modules }
   },
   questionFor: (current, questionList, wordList) => {
-    const module = questionList.modules.filter((m) => m.module == current.module)[0];
-    let submodule = module.submodules.filter((s) => s.submodule == current.submodule)[0];
-    submodule.questions = reviseQuestions(submodule.questions);
-    const questionWord = submodule.questions[current.question];
-    let question = wordList[questionWord];
-    // Replace previously answered words with underscores
-    question.components.forEach((c) => { c.valueUnsolved = Array(c.valueSolved.length).join('_')});
-    if (question) {
-      return { value: question, counters: counters(questionList, module, submodule) };
-    } else {
+    try {
+      const module = questionList.modules.filter((m) => m.module == current.module)[0];
+      let submodule = module.submodules.filter((s) => s.submodule == current.submodule)[0];
+      let gameCounters = counters(questionList, module, submodule);
+      const questionWord = submodule.questions[current.question];
+      let question = wordList[questionWord];
+      // Replace previously answered words with underscores
+      question.components.forEach((c) => { c.valueUnsolved = Array(c.valueSolved.length + 1).join('_')});
+      return { value: question, counters: gameCounters };
+    } catch (e) {
       console.log(`QuestionListParsingService.js -> question ${current.question} in module ${current.module}, submodule ${current.submodule} wasn't found`);
+      let randomQuestion = QuestionListParsingService.randomQuestionFor(wordList);
+      randomQuestion.components.forEach((c) => { c.valueUnsolved = Array(c.valueSolved.length + 1).join('_')});
+      return { value: randomQuestion, counters: gameCounters };;
     }
+  },
+  randomQuestionFor: (wordList) => {
+    let words = Object.keys(wordList);
+    let randomWord = words[Math.floor(Math.random()*words.length)];
+    return wordList[randomWord];
   }
 }
 
@@ -49,11 +57,7 @@ const counters = (questionList, module, submodule) => {
 const reviseQuestions = (questions) => {
   const uniq = _.uniq(questions);
   let shuffled = _.shuffle(uniq);
-  while (shuffled.length < 10) {
-    shuffled = shuffled.concat(shuffled);
-  }
-  const tenQuestions = shuffled.slice(0, 10);
-  return tenQuestions;
+  return shuffled;
 }
 
 export default QuestionListParsingService;

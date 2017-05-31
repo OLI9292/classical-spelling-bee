@@ -23,25 +23,21 @@ import _ from 'underscore';
 /*    ]
 **/
 const WordParsingService = (firebaseWord) => {
-  let components;
-  let definition = firebaseWord.definition;
-  const separated = firebaseWord.separated;
   try {
+    let components;
+    let definition = firebaseWord.definition;
+    const separated = firebaseWord.separated;   
     components = parseComponents(separated);
+    components = parseDefinition(components, definition);
+    definition = cleanDefinition(definition, components);
+    value = _.pluck(components, 'valueSolved').join('');
+    if (!definition || !value) {
+      throw { name : 'MissingData', message : `missing data for ${definition ? definition : value}` };
+    }
+    return { value: value, components: components, definition: definition } 
   } catch (e) {
+    console.log(`WordParsingService -> ${e.message}`)
     return null;
-  }
-  components = parseDefinition(components, definition);
-  definition = cleanDefinition(definition, components);
-  value = _.pluck(components, 'valueSolved').join('');
-  if (!definition || !value) {
-    console.log(`Word.js -> missing data for ${definition ? definition : value}`)
-    return null;
-  }
-  return {
-    value: value,
-    components: components,
-    definition: definition
   }
 };
 
@@ -62,7 +58,7 @@ const parseComponents = (separated) => {
   for (let i = 0; i <= clean.length; i++) {
     const char = clean.charAt(i);
     if (_.contains(['.', '#'], char) || (i === clean.length)) {
-      if (!componentString) {
+      if (!componentString  && (i !== clean.length)) {
         throw { name : 'EmptyComponentString', message : `Word.js -> error parsing ${separated}` };
       } else {
         const type = char === '#' ? 'separator' : 'unknown';
